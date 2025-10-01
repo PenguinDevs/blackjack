@@ -1,0 +1,1 @@
+export { GoogleIcon, DiscordIcon, GitHubIcon } from './social-icons'
