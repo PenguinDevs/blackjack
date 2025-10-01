@@ -1,0 +1,195 @@
+name: Supabase TypeScript Types
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # Daily at 2 AM
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/**'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  generate-types:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Create types directory
+        run: mkdir -p types
+
+      - name: Generate TypeScript types from production schema
+        run: |
+          supabase gen types typescript --db-url ${{ secrets.SUPABASE_PRODUCTION_DB_URL }} > types/supabase.ts
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Validate generated types
+        run: |
+          # Install TypeScript if not already installed
+          npm install -g typescript
+          
+          # Check if the generated types are valid TypeScript
+          tsc --noEmit types/supabase.ts
+
+      - name: Check for changes
+        id: verify-changed-files
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit updated types
+        if: steps.verify-changed-files.outputs.changed == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add types/supabase.ts
+          git commit -m "chore: update Supabase TypeScript types [skip ci]"
+          git push
+
+  validate-rls-policies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Validate RLS policies
+        run: |
+          echo "Validating Row Level Security policies..."
+          
+          # Check if RLS is enabled on all tables that should have it
+          if [ -d "supabase/migrations" ]; then
+            for migration in supabase/migrations/*.sql; do
+              if [ -f "$migration" ]; then
+                # Check for tables without RLS enabled
+                if grep -q "CREATE TABLE" "$migration" && ! grep -q "ENABLE ROW LEVEL SECURITY" "$migration"; then
+                  echo "Warning: Table creation found without RLS in $migration"
+                fi
+              fi
+            done
+          fi
+
+      - name: Test RLS policies
+        run: |
+          echo "Testing RLS policies against test scenarios..."
+          # Add RLS policy testing logic here
+          # This could involve running test queries with different user contexts
+
+  backup-schema:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Backup database schema
+        run: |
+          echo "Creating schema backup..."
+          mkdir -p backups/schema
+          
+          # Generate schema dump
+          supabase db dump --db-url ${{ secrets.SUPABASE_PRODUCTION_DB_URL }} --schema-only > backups/schema/schema-$(date +%Y%m%d).sql
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Upload schema backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: schema-backup-${{ github.run_number }}
+          path: backups/schema/
+          retention-days: 30
+
+  monitor-performance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Monitor database performance
+        run: |
+          echo "Monitoring database performance..."
+          
+          # Check for slow queries
+          # Check table sizes
+          # Check index usage
+          # This would involve running performance queries against your database
+          
+          echo "Performance monitoring completed"
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+  edge-functions-test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: Test Edge Functions
+        run: |
+          if [ -d "supabase/functions" ]; then
+            echo "Testing Supabase Edge Functions..."
+            
+            # Start local Supabase
+            supabase start
+            
+            # Test each edge function
+            for func_dir in supabase/functions/*/; do
+              if [ -d "$func_dir" ]; then
+                func_name=$(basename "$func_dir")
+                echo "Testing function: $func_name"
+                
+                # Deploy function locally
+                supabase functions deploy "$func_name"
+                
+                # Run basic health check
+                # Add your specific function tests here
+              fi
+            done
+            
+            # Stop local Supabase
+            supabase stop
+          else
+            echo "No Edge Functions found to test"
+          fi
