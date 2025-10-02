@@ -43,6 +43,7 @@ export function AuthForm({ mode, onToggleMode }: AuthFormProps) {
           email,
           password,
         })
+        // console.log("YADDDAH YADDAH YADDAH", error)
         if (error) throw error
         setMessage('Check your email for the confirmation link!')
       }

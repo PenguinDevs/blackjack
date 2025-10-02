@@ -1,0 +1,97 @@
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { AuthForm } from '../AuthForm'
+
+// Mock Supabase
+vi.mock('@/lib/supabase', () => ({
+  supabase: {
+    auth: {
+      signInWithPassword: vi.fn(),
+      signUp: vi.fn(),
+      signInWithOAuth: vi.fn(),
+    }
+  }
+}))
+
+describe('AuthForm', () => {
+  const mockToggleMode = vi.fn()
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('renders sign in form by default', () => {
+    render(<AuthForm mode="signin" onToggleMode={mockToggleMode} />)
+    
+    expect(screen.getByText('Sign In to Blackjack')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument()
+    expect(screen.getByText("Don't have an account? Sign up")).toBeInTheDocument()
+  })
+
+  it('renders sign up form when mode is signup', () => {
+    render(<AuthForm mode="signup" onToggleMode={mockToggleMode} />)
+    
+    expect(screen.getByText('Sign Up to Blackjack')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument()
+    expect(screen.getByText('Already have an account? Sign in')).toBeInTheDocument()
+  })
+
+  it('handles email and password input', async () => {
+    render(<AuthForm mode="signin" onToggleMode={mockToggleMode} />)
+    
+    const emailInput = screen.getByLabelText(/email/i)
+    const passwordInput = screen.getByLabelText(/password/i)
+    
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
+    fireEvent.change(passwordInput, { target: { value: 'password123' } })
+    
+    expect(emailInput).toHaveValue('test@example.com')
+    expect(passwordInput).toHaveValue('password123')
+  })
+
+  it('calls onToggleMode when toggle button is clicked', () => {
+    render(<AuthForm mode="signin" onToggleMode={mockToggleMode} />)
+    
+    const toggleButton = screen.getByText("Don't have an account? Sign up")
+    fireEvent.click(toggleButton)
+    
+    expect(mockToggleMode).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows OAuth buttons', () => {
+    render(<AuthForm mode="signin" onToggleMode={mockToggleMode} />)
+    
+    // OAuth buttons should be present (we can check by their parent container)
+    expect(screen.getByText('Or continue with')).toBeInTheDocument()
+  })
+
+  it('disables form during loading state', async () => {
+    const { supabase } = await import('@/lib/supabase')
+    
+    // Mock a delayed response
+    supabase.auth.signInWithPassword = vi.fn().mockImplementation(() => 
+      new Promise(resolve => setTimeout(() => resolve({ data: { user: null, session: null }, error: null }), 100))
+    )
+    
+    render(<AuthForm mode="signin" onToggleMode={mockToggleMode} />)
+    
+    const emailInput = screen.getByLabelText(/email/i)
+    const passwordInput = screen.getByLabelText(/password/i)
+    const submitButton = screen.getByRole('button', { name: /sign in/i })
+    
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
+    fireEvent.change(passwordInput, { target: { value: 'password123' } })
+    fireEvent.click(submitButton)
+    
+    // Button should show loading state
+    expect(submitButton).toBeDisabled()
+    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument()
+    // Check for the loading spinner (Loader2 icon)
+    expect(document.querySelector('.lucide-loader-circle')).toBeInTheDocument()
+    
+    // Wait for loading to complete
+    await waitFor(() => {
+      expect(document.querySelector('.lucide-loader-circle')).not.toBeInTheDocument()
+    }, { timeout: 200 })
+  })
+})

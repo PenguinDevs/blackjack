@@ -21,10 +21,8 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center px-4 min-h-[calc(100vh-80px)]">
         <div className="text-center space-y-12 max-w-6xl mx-auto">
-          {/* Giant Title */}
           <h1 className="text-8xl md:text-9xl lg:text-[12rem] xl:text-[14rem] font-black tracking-tight text-foreground font-mono leading-none">
             blackjack
           </h1>
@@ -32,11 +30,11 @@ export default function Home() {
           {/* Play Button */}
           <div className="flex justify-center">
             {user ? (
-              <Button size="lg" className="text-2xl px-16 py-8 h-auto bg-green-600 hover:bg-green-700 rounded-xl font-semibold">
-                🎮 Play Now
+              <Button size="lg" className="uppercase text-6xl px-8 py-8 h-auto rounded-xl font-bold">
+                Play
               </Button>
             ) : (
-              <Button size="lg" asChild className="text-2xl px-16 py-8 h-auto rounded-xl font-semibold">
+              <Button size="lg" asChild className="uppercase text-4xl px-8 py-8 h-auto rounded-xl font-bold">
                 <Link href="/auth/login">
                   Get Started
                 </Link>
