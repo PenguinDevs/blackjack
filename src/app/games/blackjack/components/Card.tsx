@@ -63,7 +63,7 @@ export const Card: React.FC<CardProps> = ({ card, className = '', onClick }) => 
 interface HandProps {
   cards: CardType[]
   label: string
-  value?: number
+  value?: number | string
   className?: string
   onCardClick?: (cardIndex: number) => void
 }
