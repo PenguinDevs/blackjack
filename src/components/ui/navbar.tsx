@@ -5,7 +5,8 @@ import { UserMenu } from '@/components/auth/UserMenu'
 import { Button } from '@/components/ui/button'
 import { Coins, Plus } from 'lucide-react'
 import Link from 'next/link'
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
+import { CreditsModal } from './credits-modal'
 
 interface NavbarProps {
   leftContent?: ReactNode
@@ -13,27 +14,40 @@ interface NavbarProps {
 
 interface CreditsDisplayProps {
   credits: number
-  onAddCredits?: () => void
+  onPurchase: (amount: number) => void
 }
 
-export function CreditsDisplay({ credits, onAddCredits }: CreditsDisplayProps) {
+export function CreditsDisplay({ credits, onPurchase }: CreditsDisplayProps) {
+  const [showCreditsModal, setShowCreditsModal] = useState(false)
+
+  const handlePurchase = (amount: number) => {
+    onPurchase(amount)
+    setShowCreditsModal(false)
+  }
+
   return (
-    <div className="flex items-center space-x-3 text-lg font-bold">
-      <div className="flex items-center space-x-2">
-        <Coins className="h-5 w-5 text-yellow-500" />
-        <span>{credits.toLocaleString()} Credits</span>
-      </div>
-      {onAddCredits && (
+    <>
+      <div className="flex items-center space-x-3 text-lg font-bold">
+        <div className="flex items-center space-x-2">
+          <Coins className="h-5 w-5 text-yellow-500" />
+          <span>{credits.toLocaleString()} Credits</span>
+        </div>
         <Button 
           variant="outline" 
           size="sm"
-          onClick={onAddCredits}
+          onClick={() => setShowCreditsModal(true)}
           className="h-8 w-8 p-0"
         >
           <Plus className="h-4 w-4" />
         </Button>
-      )}
-    </div>
+      </div>
+      
+      <CreditsModal
+        open={showCreditsModal}
+        onOpenChange={setShowCreditsModal}
+        onPurchase={handlePurchase}
+      />
+    </>
   )
 }
 

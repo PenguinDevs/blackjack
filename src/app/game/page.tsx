@@ -4,25 +4,17 @@ import { useState } from 'react'
 import { Navbar, CreditsDisplay } from '@/components/ui/navbar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import { Coins, Plus } from 'lucide-react'
 
 export default function GamePage() {
   const [credits, setCredits] = useState(1000)
   const [gameStarted, setGameStarted] = useState(false)
-  const [showCreditsModal, setShowCreditsModal] = useState(false)
   const [showGameOptions, setShowGameOptions] = useState(false)
 
-  const handleAddCredits = () => {
+  const handlePurchaseCredits = (amount: number) => {
     // This would typically involve payment processing
-    setCredits(credits + 500)
+    setCredits(credits + amount)
   }
 
   const handleStartGame = () => {
@@ -38,7 +30,7 @@ export default function GamePage() {
           leftContent={
             <CreditsDisplay 
               credits={credits} 
-              onAddCredits={() => setShowCreditsModal(true)} 
+              onPurchase={handlePurchaseCredits} 
             />
           } 
         />
@@ -115,33 +107,7 @@ export default function GamePage() {
           </div>
         </div>
 
-        {/* Credits Modal */}
-        <Dialog open={showCreditsModal} onOpenChange={setShowCreditsModal}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Purchase Credits</DialogTitle>
-              <DialogDescription>
-                Add more credits to your account to continue playing.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="space-y-3">
-                <div className="flex justify-between items-center p-3 border rounded-lg">
-                  <p className="font-medium">500 Credits</p>
-                  <Button onClick={handleAddCredits}>Buy</Button>
-                </div>
-                <div className="flex justify-between items-center p-3 border rounded-lg">
-                  <p className="font-medium">1,000 Credits</p>
-                  <Button onClick={handleAddCredits}>Buy</Button>
-                </div>
-                <div className="flex justify-between items-center p-3 border rounded-lg">
-                  <p className="font-medium">2,500 Credits</p>
-                  <Button onClick={handleAddCredits}>Buy</Button>
-                </div>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+
       </main>
     </div>
     </AuthGuard>
