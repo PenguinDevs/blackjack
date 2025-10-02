@@ -197,6 +197,7 @@ export class GameUtils {
     
     return 'Stand'
   }
+}
 
 /**
  * Constants for game configuration
