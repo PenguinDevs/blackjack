@@ -2,7 +2,7 @@ import { Card, Hand, Suit, Rank, BlackjackGameState, GameState, PlayerAction, Ga
 
 /**
  * Server-side Blackjack game logic
- * Handles game state, card dealing, scoring, and game rules
+ * Handles game state, card dealing, scoring
  */
 export class BlackjackEngine {
   private static readonly DECK_SIZE = 52

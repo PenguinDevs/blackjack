@@ -38,12 +38,6 @@ export async function executePlayerAction(
           newGameState = BlackjackEngine.completeGame(newGameState)
         }
         break
-      case 'double-down':
-        // TODO: Implement double down logic
-        throw new Error('Double down not implemented yet')
-      case 'split':
-        // TODO: Implement split logic
-        throw new Error('Split not implemented yet')
       default:
         throw new Error(`Unknown action: ${action}`)
     }

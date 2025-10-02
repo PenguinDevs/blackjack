@@ -25,8 +25,6 @@ export const GameActions: React.FC<GameActionsProps> = ({
     switch (action) {
       case 'hit': return 'Hit'
       case 'stand': return 'Stand'
-      case 'double-down': return 'Double Down'
-      case 'split': return 'Split'
       default: return action
     }
   }
@@ -35,8 +33,6 @@ export const GameActions: React.FC<GameActionsProps> = ({
     switch (action) {
       case 'hit': return 'default'
       case 'stand': return 'outline'
-      case 'double-down': return 'secondary'
-      case 'split': return 'destructive'
       default: return 'outline'
     }
   }

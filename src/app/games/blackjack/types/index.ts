@@ -24,7 +24,7 @@ export type GameState =
   | 'dealer-turn' // Dealer's turn to act
   | 'game-over' // Round completed
 
-export type PlayerAction = 'hit' | 'stand' | 'double-down' | 'split'
+export type PlayerAction = 'hit' | 'stand'
 
 export interface GameResult {
   playerWins: boolean

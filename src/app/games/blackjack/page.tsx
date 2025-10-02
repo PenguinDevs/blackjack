@@ -52,14 +52,6 @@ export default function BlackjackPage() {
       case 'stand':
         await playerStand()
         break
-      case 'double-down':
-        // TODO: Implement double down
-        console.log('Double down not implemented yet')
-        break
-      case 'split':
-        // TODO: Implement split
-        console.log('Split not implemented yet')
-        break
     }
   }
 
@@ -119,24 +111,6 @@ export default function BlackjackPage() {
               </Button>
             </div>
           )}
-
-          {/* Game Rules (collapsible) */}
-          <div className="mt-12 text-center">
-            <details className="bg-gray-900/50 rounded-lg p-6 text-left max-w-2xl mx-auto">
-              <summary className="cursor-pointer text-lg font-semibold text-white mb-4">
-                Game Rules
-              </summary>
-              <div className="text-gray-300 space-y-2 text-sm">
-                <p><strong>Objective:</strong> Get as close to 21 as possible without going over (busting).</p>
-                <p><strong>Card Values:</strong> Number cards = face value, Face cards = 10, Ace = 1 or 11</p>
-                <p><strong>Blackjack:</strong> Ace + 10-value card on first two cards (pays 3:2)</p>
-                <p><strong>Hit:</strong> Take another card</p>
-                <p><strong>Stand:</strong> Keep your current hand</p>
-                <p><strong>Dealer Rules:</strong> Must hit on 16 or less, must stand on 17 or more</p>
-                <p><strong>Push:</strong> Tie with dealer (bet returned)</p>
-              </div>
-            </details>
-          </div>
         </main>
       </div>
     </AuthGuard>

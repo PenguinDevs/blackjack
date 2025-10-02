@@ -121,9 +121,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({
             {/* Current Bet Display */}
             {gameState.gameState !== 'waiting' && (
               <div className="absolute bottom-8 left-8">
-                <div className="bg-black/60 backdrop-blur-sm rounded-lg p-4 border border-gray-600">
-                  <p className="text-sm font-medium mb-2 text-gray-300">Current Bet</p>
-                  <p className="text-xl font-black text-white">{gameState.currentBet} Credits</p>
+                <div className="rounded-lg p-4">
+                  <p className="text-sm font-medium mb-2">Current Bet</p>
+                  <p className="text-xl font-black ">{gameState.currentBet} Credits</p>
                 </div>
               </div>
             )}
