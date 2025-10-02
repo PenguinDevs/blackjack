@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Navbar } from '@/components/ui/navbar'
+import { Navbar, CreditsDisplay } from '@/components/ui/navbar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -34,7 +34,14 @@ export default function GamePage() {
   return (
     <AuthGuard>
       <div className="min-h-screen bg-background">
-        <Navbar credits={credits} onAddCredits={() => setShowCreditsModal(true)} />
+        <Navbar 
+          leftContent={
+            <CreditsDisplay 
+              credits={credits} 
+              onAddCredits={() => setShowCreditsModal(true)} 
+            />
+          } 
+        />
 
         <main className="container mx-auto px-4 py-8">
         {/* Game Canvas */}
