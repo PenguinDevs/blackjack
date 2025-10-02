@@ -141,7 +141,7 @@ export class BlackjackEngine {
    * Deals initial cards (2 to player, 2 to dealer with one hidden)
    */
   static dealInitialCards(gameState: BlackjackGameState): BlackjackGameState {
-    let { deck } = gameState
+    const { deck } = gameState
     
     // Deal two cards to player
     const { card: playerCard1, remainingDeck: deck1 } = this.dealCard(deck)

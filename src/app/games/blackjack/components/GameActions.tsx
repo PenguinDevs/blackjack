@@ -42,7 +42,7 @@ export const GameActions: React.FC<GameActionsProps> = ({
       {availableActions.map((action) => (
         <Button
           key={action}
-          variant={getActionVariant(action) as any}
+          variant={getActionVariant(action) as "default" | "destructive" | "outline" | "secondary" | "ghost" | "link"}
           className="font-semibold px-6 py-2"
           onClick={() => onPlayerAction(action)}
           disabled={disabled}

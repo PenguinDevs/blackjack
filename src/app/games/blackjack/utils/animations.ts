@@ -1,5 +1,5 @@
 import { animate, createScope } from 'animejs'
-import { AnimationConfig, CardAnimation } from '../types'
+import { CardAnimation } from '../types'
 
 /**
  * Animation utilities for blackjack game
@@ -152,7 +152,7 @@ export class GameAnimations {
   /**
    * Animates hand value update
    */
-  static animateHandValue(element: HTMLElement, newValue: number): Promise<void> {
+  static animateHandValue(element: HTMLElement): Promise<void> {
     return new Promise((resolve) => {
       animate(element, {
         scale: [1, 1.2, 1],
@@ -201,7 +201,7 @@ export class GameAnimations {
    * Staggered animation for multiple cards
    */
   static animateMultipleCards(
-    cards: { element: HTMLElement; config: CardAnimation['config'] & { from: any; to: any } }[]
+    cards: { element: HTMLElement; config: CardAnimation['config'] & { from: { x: number; y: number; rotation?: number }; to: { x: number; y: number; rotation?: number } } }[]
   ): Promise<void[]> {
     return Promise.all(
       cards.map((card, index) => 

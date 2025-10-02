@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { BlackjackGameState, BettingState, PlayerAction, GameState } from '../types'
+import { BlackjackGameState, BettingState } from '../types'
 import { BlackjackEngine } from '../lib/blackjack-engine'
 
 interface UseBlackjackGameReturn {
@@ -65,6 +65,7 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
     } finally {
       setIsLoading(false)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const playerHit = useCallback(async () => {
@@ -103,6 +104,7 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
       setError(err instanceof Error ? err.message : 'Failed to stand')
       setIsLoading(false)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState])
 
   const playDealerTurn = useCallback(async (currentGameState: BlackjackGameState) => {

@@ -1,4 +1,4 @@
-import { Card, Suit, Rank } from '../types'
+import { Card, Suit, Rank, BlackjackGameState } from '../types'
 
 /**
  * Utility functions for blackjack game
@@ -197,32 +197,6 @@ export class GameUtils {
     
     return 'Stand'
   }
-
-  /**
-   * Generate achievement check
-   */
-  static checkAchievements(gameHistory: any[]): string[] {
-    const achievements: string[] = []
-    
-    if (gameHistory.length >= 10) {
-      achievements.push('Veteran Player - Played 10+ games')
-    }
-    
-    const wins = gameHistory.filter(game => game.result?.playerWins).length
-    if (wins >= 5) {
-      achievements.push('Winner - Won 5+ games')
-    }
-    
-    const blackjacks = gameHistory.filter(game => 
-      game.playerHand?.isBlackjack
-    ).length
-    if (blackjacks >= 3) {
-      achievements.push('Blackjack Master - Got 3+ blackjacks')
-    }
-    
-    return achievements
-  }
-}
 
 /**
  * Constants for game configuration
