@@ -17,17 +17,24 @@ interface AuthFormProps {
   onToggleMode: () => void
 }
 
+interface AccountExistsError {
+  type: 'account-exists'
+  message: string
+}
+
 export function AuthForm({ mode, onToggleMode }: AuthFormProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [accountExistsError, setAccountExistsError] = useState<AccountExistsError | null>(null)
   const [message, setMessage] = useState<string | null>(null)
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    setAccountExistsError(null)
     setMessage(null)
 
     try {
@@ -39,25 +46,57 @@ export function AuthForm({ mode, onToggleMode }: AuthFormProps) {
         if (error) throw error
         setMessage('Signed in successfully!')
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
         })
-        // console.log("YADDDAH YADDAH YADDAH", error)
+        
         if (error) throw error
-        setMessage('Check your email for the confirmation link!')
+        
+        // Check if user already exists based on the response structure
+        // When email confirmation is enabled and user exists, Supabase returns
+        // data.user but data.session is null, and the user might be obfuscated
+        if (data.user && !data.session && data.user.identities && data.user.identities.length === 0) {
+          // This indicates the user already exists (obfuscated response)
+          setAccountExistsError({
+            type: 'account-exists',
+            message: `An account with this email already exists.`
+          })
+        } else {
+          setMessage('Check your email for the confirmation link!')
+        }
       }
     } catch (error) {
       const authError = error as AuthError
-      setError(authError.message)
+      
+      // Handle the case where user already exists during sign up (when email confirmation is disabled)
+      if (mode === 'signup' && (
+        authError.message.toLowerCase().includes('user already registered') ||
+        authError.message.toLowerCase().includes('email already registered') ||
+        authError.message.toLowerCase().includes('already registered')
+      )) {
+        setAccountExistsError({
+          type: 'account-exists',
+          message: `An account with this email already exists.`
+        })
+      } else {
+        setError(authError.message)
+      }
     } finally {
       setLoading(false)
     }
   }
 
+  const handleSwitchToSignIn = () => {
+    setAccountExistsError(null)
+    setError(null)
+    onToggleMode()
+  }
+
   const handleOAuthSignIn = async (provider: 'google' | 'discord' | 'github') => {
     setLoading(true)
     setError(null)
+    setAccountExistsError(null)
 
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -91,6 +130,22 @@ export function AuthForm({ mode, onToggleMode }: AuthFormProps) {
           {error && (
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {accountExistsError && (
+            <Alert variant="destructive">
+              <AlertDescription className="flex flex-col space-y-2">
+                <span>{accountExistsError.message}</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSwitchToSignIn}
+                  className="w-fit"
+                >
+                  Switch to Sign In
+                </Button>
+              </AlertDescription>
             </Alert>
           )}
 

@@ -94,4 +94,97 @@ describe('AuthForm', () => {
       expect(document.querySelector('.lucide-loader-circle')).not.toBeInTheDocument()
     }, { timeout: 200 })
   })
+
+  it('shows account exists error when user already exists during signup (obfuscated response)', async () => {
+    const { supabase } = await import('@/lib/supabase')
+    
+    // Mock signup response for existing user (obfuscated response)
+    supabase.auth.signUp = vi.fn().mockResolvedValue({
+      data: {
+        user: {
+          id: 'fake-id',
+          email: 'test@example.com',
+          identities: [] // Empty identities array indicates existing user
+        },
+        session: null
+      },
+      error: null
+    })
+    
+    render(<AuthForm mode="signup" onToggleMode={mockToggleMode} />)
+    
+    const emailInput = screen.getByLabelText(/email/i)
+    const passwordInput = screen.getByLabelText(/password/i)
+    const submitButton = screen.getByRole('button', { name: /sign up/i })
+    
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
+    fireEvent.change(passwordInput, { target: { value: 'password123' } })
+    fireEvent.click(submitButton)
+    
+    await waitFor(() => {
+      expect(screen.getByText('An account with this email already exists.')).toBeInTheDocument()
+      expect(screen.getByText('Switch to Sign In')).toBeInTheDocument()
+    })
+  })
+
+  it('shows account exists error when user already exists during signup (error response)', async () => {
+    const { supabase } = await import('@/lib/supabase')
+    
+    // Mock signup response for existing user (error response)
+    supabase.auth.signUp = vi.fn().mockResolvedValue({
+      data: { user: null, session: null },
+      error: { message: 'User already registered' }
+    })
+    
+    render(<AuthForm mode="signup" onToggleMode={mockToggleMode} />)
+    
+    const emailInput = screen.getByLabelText(/email/i)
+    const passwordInput = screen.getByLabelText(/password/i)
+    const submitButton = screen.getByRole('button', { name: /sign up/i })
+    
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
+    fireEvent.change(passwordInput, { target: { value: 'password123' } })
+    fireEvent.click(submitButton)
+    
+    await waitFor(() => {
+      expect(screen.getByText('An account with this email already exists.')).toBeInTheDocument()
+      expect(screen.getByText('Switch to Sign In')).toBeInTheDocument()
+    })
+  })
+
+  it('switches to sign in when Switch to Sign In button is clicked', async () => {
+    const { supabase } = await import('@/lib/supabase')
+    
+    // Mock signup response for existing user
+    supabase.auth.signUp = vi.fn().mockResolvedValue({
+      data: {
+        user: {
+          id: 'fake-id',
+          email: 'test@example.com',
+          identities: []
+        },
+        session: null
+      },
+      error: null
+    })
+    
+    render(<AuthForm mode="signup" onToggleMode={mockToggleMode} />)
+    
+    const emailInput = screen.getByLabelText(/email/i)
+    const passwordInput = screen.getByLabelText(/password/i)
+    const submitButton = screen.getByRole('button', { name: /sign up/i })
+    
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
+    fireEvent.change(passwordInput, { target: { value: 'password123' } })
+    fireEvent.click(submitButton)
+    
+    await waitFor(() => {
+      expect(screen.getByText('Switch to Sign In')).toBeInTheDocument()
+    })
+    
+    const switchButton = screen.getByText('Switch to Sign In')
+    fireEvent.click(switchButton)
+    
+    expect(mockToggleMode).toHaveBeenCalledTimes(1)
+  })
 })
