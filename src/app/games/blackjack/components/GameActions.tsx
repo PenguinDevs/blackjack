@@ -92,7 +92,7 @@ export const GameStatus: React.FC<GameStatusProps> = ({
   }
 
   return (
-    <div className="text-center mb-4">
+    <div className="text-center">
       <p className={`text-sm font-medium ${getStatusColor()}`}>
         {getStatusMessage()}
       </p>

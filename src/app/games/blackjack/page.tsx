@@ -70,7 +70,7 @@ export default function BlackjackPage() {
           leftContent={<CreditsDisplay />} 
         />
 
-        <main className="container mx-auto px-4 py-8">
+        <main className="container mx-auto px-4 py-8 relative">
           {/* Error Display */}
           {error && (
             <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-2 rounded-lg mb-4">
@@ -78,10 +78,10 @@ export default function BlackjackPage() {
             </div>
           )}
 
-          {/* Loading Indicator */}
+          {/* Loading Indicator - Fixed Position Overlay */}
           {isLoading && gameState.gameState !== 'waiting' && (
-            <div className="text-center mb-4">
-              <div className="inline-flex items-center px-4 py-2 bg-blue-500/20 border border-blue-500 text-blue-200 rounded-lg">
+            <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50">
+              <div className="inline-flex items-center px-4 py-2 bg-blue-500/90 backdrop-blur-sm border border-blue-500 text-blue-200 rounded-lg shadow-lg">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-300 mr-2"></div>
                 Processing...
               </div>

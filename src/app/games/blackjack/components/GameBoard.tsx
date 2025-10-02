@@ -45,18 +45,19 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   return (
     <div ref={rootRef} className="w-full">
       <div className="p-8">
-        <div className="w-full h-[600px] flex items-center justify-center relative">
-          <div className="w-full h-full p-8">
-            
-            {/* Game Status */}
-            <GameStatus 
-              gameState={gameState.gameState}
-              currentBet={gameState.currentBet}
-              message={gameState.gameResult?.reason}
-            />
+        <div className="w-full h-[600px] relative">
+          
+            {/* Game Status - Fixed Position at Top Center */}
+            <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
+              <GameStatus 
+                gameState={gameState.gameState}
+                currentBet={gameState.currentBet}
+                message={gameState.gameResult?.reason}
+              />
+            </div>
 
-            {/* Dealer Section */}
-            <div className="mb-8">
+            {/* Dealer Section - Fixed Position */}
+            <div className="absolute top-16 left-1/2 transform -translate-x-1/2">
               <Hand 
                 cards={gameState.dealerHand.cards}
                 label="Dealer"
@@ -64,22 +65,23 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                   ? gameState.dealerHand.value 
                   : undefined
                 }
-                className="mb-8"
               />
             </div>
 
             {/* Center Betting Interface */}
             {showBettingInterface && (
-              <BettingInterface
-                bettingState={bettingState}
-                credits={credits}
-                onBetChange={onBetChange}
-                onPlaceBet={onPlaceBet}
-                onShowBettingOptions={onShowBettingOptions}
-              />
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <BettingInterface
+                  bettingState={bettingState}
+                  credits={credits}
+                  onBetChange={onBetChange}
+                  onPlaceBet={onPlaceBet}
+                  onShowBettingOptions={onShowBettingOptions}
+                />
+              </div>
             )}
 
-            {/* Player Section */}
+            {/* Player Section - Fixed Position */}
             <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
               <Hand 
                 cards={gameState.playerHand.cards}
@@ -127,7 +129,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                 </div>
               </div>
             )}
-          </div>
         </div>
       </div>
     </div>
