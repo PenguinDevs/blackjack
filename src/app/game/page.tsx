@@ -3,19 +3,13 @@
 import { useState } from 'react'
 import { Navbar, CreditsDisplay } from '@/components/ui/navbar'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { AuthGuard } from '@/components/auth/AuthGuard'
-import { Coins, Plus } from 'lucide-react'
+import { useCredits } from '@/hooks/useCredits'
 
 export default function GamePage() {
-  const [credits, setCredits] = useState(1000)
+  const { credits } = useCredits()
   const [gameStarted, setGameStarted] = useState(false)
   const [showGameOptions, setShowGameOptions] = useState(false)
-
-  const handlePurchaseCredits = (amount: number) => {
-    // This would typically involve payment processing
-    setCredits(credits + amount)
-  }
 
   const handleStartGame = () => {
     setGameStarted(true)
@@ -27,12 +21,7 @@ export default function GamePage() {
     <AuthGuard>
       <div className="min-h-screen bg-background">
         <Navbar 
-          leftContent={
-            <CreditsDisplay 
-              credits={credits} 
-              onPurchase={handlePurchaseCredits} 
-            />
-          } 
+          leftContent={<CreditsDisplay />} 
         />
 
         <main className="container mx-auto px-4 py-8">
@@ -58,14 +47,21 @@ export default function GamePage() {
                 {/* Center Play Button (when game not started) */}
                 {!gameStarted && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <Button 
-                      onClick={handleStartGame}
-                      size="lg"
-                      className="text-2xl px-12 py-8 bg-white text-black hover:bg-gray-100 font-bold"
-                      disabled={credits < 10}
-                    >
-                      Play Blackjack
-                    </Button>
+                    <div className="text-center">
+                      <Button 
+                        onClick={handleStartGame}
+                        size="lg"
+                        className="text-2xl px-12 py-8 bg-white text-black hover:bg-gray-100 font-bold mb-4"
+                        disabled={credits < 10}
+                      >
+                        Play
+                      </Button>
+                      {credits < 10 && (
+                        <p className="text-white text-sm">
+                          You need at least 10 credits to play. Click the + button to get more credits!
+                        </p>
+                      )}
+                    </div>
                   </div>
                 )}
 
@@ -97,9 +93,9 @@ export default function GamePage() {
 
                 {/* Betting Area */}
                 <div className="absolute bottom-8 left-8">
-                  <div className="bg-white rounded-lg p-4">
-                    <p className="text-sm font-medium text-black mb-2">Current Bet</p>
-                    <p className="text-xl font-bold text-black">10 Credits</p>
+                  <div className="rounded-lg p-4">
+                    <p className="text-sm font-medium mb-2">Current Bet</p>
+                    <p className="text-xl font-black text-foreground">10 Credits</p>
                   </div>
                 </div>
               </div>

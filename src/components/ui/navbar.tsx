@@ -4,6 +4,7 @@ import { useAuth } from '@/components/auth/AuthProvider'
 import { UserMenu } from '@/components/auth/UserMenu'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { useCredits } from '@/hooks/useCredits'
 import { Coins, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { ReactNode, useState } from 'react'
@@ -13,25 +14,18 @@ interface NavbarProps {
   leftContent?: ReactNode
 }
 
-interface CreditsDisplayProps {
-  credits: number
-  onPurchase: (amount: number) => void
-}
-
-export function CreditsDisplay({ credits, onPurchase }: CreditsDisplayProps) {
+export function CreditsDisplay() {
   const [showCreditsModal, setShowCreditsModal] = useState(false)
-
-  const handlePurchase = (amount: number) => {
-    onPurchase(amount)
-    setShowCreditsModal(false)
-  }
+  const { credits, loading } = useCredits()
 
   return (
     <>
       <div className="flex items-center space-x-3 text-lg font-bold">
         <div className="flex items-center space-x-2">
           <Coins className="h-5 w-5 text-yellow-500" />
-          <span>{credits.toLocaleString()} Credits</span>
+          <span>
+            {loading ? '...' : credits.toLocaleString()} Credits
+          </span>
         </div>
         <Button 
           variant="outline" 
@@ -46,7 +40,6 @@ export function CreditsDisplay({ credits, onPurchase }: CreditsDisplayProps) {
       <CreditsModal
         open={showCreditsModal}
         onOpenChange={setShowCreditsModal}
-        onPurchase={handlePurchase}
       />
     </>
   )
@@ -60,12 +53,12 @@ export function Navbar({ leftContent }: NavbarProps) {
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center space-x-8">
-            {leftContent}
             <Link href="/" className="hover:opacity-80 transition-opacity">
               <h1 className="text-2xl font-black tracking-tight font-mono">
                 blackjack
               </h1>
             </Link>
+            {leftContent}
           </div>
           <div className="flex items-center space-x-4">
             <ThemeToggle />

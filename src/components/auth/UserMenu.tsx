@@ -12,10 +12,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
-import { LogOut, User } from 'lucide-react'
+import { useCredits } from '@/hooks/useCredits'
+import { LogOut, User, Coins } from 'lucide-react'
 
 export function UserMenu() {
   const { user, signOut } = useAuth()
+  const { credits, loading: creditsLoading } = useCredits()
 
   if (!user) return null
 
@@ -47,6 +49,12 @@ export function UserMenu() {
                 via {user.user_metadata.provider}
               </Badge>
             )}
+            <div className="flex items-center space-x-1 mt-2">
+              <Coins className="h-3 w-3 text-yellow-500" />
+              <span className="text-xs font-medium">
+                {creditsLoading ? '...' : credits.toLocaleString()} Credits
+              </span>
+            </div>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
