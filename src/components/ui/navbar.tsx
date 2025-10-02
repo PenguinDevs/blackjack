@@ -23,12 +23,10 @@ export function CreditsDisplay() {
       <div className="flex items-center space-x-3 text-lg font-bold">
         <div className="flex items-center space-x-2">
           <Coins className="h-5 w-5 text-yellow-500" />
-          <span>
-            {loading ? '...' : credits.toLocaleString()} Credits
-          </span>
+          <span>{loading ? '...' : credits.toLocaleString()} Credits</span>
         </div>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="sm"
           onClick={() => setShowCreditsModal(true)}
           className="h-8 w-8 p-0"
@@ -36,11 +34,8 @@ export function CreditsDisplay() {
           <Plus className="h-4 w-4" />
         </Button>
       </div>
-      
-      <CreditsModal
-        open={showCreditsModal}
-        onOpenChange={setShowCreditsModal}
-      />
+
+      <CreditsModal open={showCreditsModal} onOpenChange={setShowCreditsModal} />
     </>
   )
 }
@@ -54,9 +49,7 @@ export function Navbar({ leftContent }: NavbarProps) {
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center space-x-8">
             <Link href="/" className="hover:opacity-80 transition-opacity">
-              <h1 className="text-2xl font-black tracking-tight font-mono">
-                blackjack
-              </h1>
+              <h1 className="text-2xl font-black tracking-tight font-mono">blackjack</h1>
             </Link>
             {leftContent}
           </div>
@@ -66,9 +59,7 @@ export function Navbar({ leftContent }: NavbarProps) {
               <UserMenu />
             ) : (
               <Button asChild>
-                <Link href="/auth/login">
-                  Sign In
-                </Link>
+                <Link href="/auth/login">Sign In</Link>
               </Button>
             )}
           </div>

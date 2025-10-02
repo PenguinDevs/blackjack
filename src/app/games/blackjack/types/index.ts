@@ -16,7 +16,7 @@ export interface Hand {
   isSoft: boolean // Contains Ace counted as 11
 }
 
-export type GameState = 
+export type GameState =
   | 'waiting' // Waiting for bet
   | 'betting' // Player placing bet
   | 'dealing' // Initial cards being dealt

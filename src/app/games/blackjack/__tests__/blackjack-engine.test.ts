@@ -24,11 +24,11 @@ describe('BlackjackEngine', () => {
     it('should create a shuffled deck', () => {
       const deck = BlackjackEngine.createDeck()
       expect(deck).toHaveLength(52)
-      
+
       // Check that all suits and ranks are present
-      const suits = new Set(deck.map(card => card.suit))
-      const ranks = new Set(deck.map(card => card.rank))
-      
+      const suits = new Set(deck.map((card) => card.suit))
+      const ranks = new Set(deck.map((card) => card.rank))
+
       expect(suits.size).toBe(4)
       expect(ranks.size).toBe(13)
     })
@@ -37,7 +37,7 @@ describe('BlackjackEngine', () => {
   describe('Card Dealing', () => {
     it('should deal initial cards correctly', () => {
       const initializedGame = BlackjackEngine.dealInitialCards(gameState)
-      
+
       expect(initializedGame.playerHand.cards).toHaveLength(2)
       expect(initializedGame.dealerHand.cards).toHaveLength(2)
       expect(initializedGame.dealerHand.cards[1].isHidden).toBe(true)
@@ -56,9 +56,9 @@ describe('BlackjackEngine', () => {
     it('should calculate hand values correctly', () => {
       const cards: Card[] = [
         { suit: 'hearts', rank: '10', value: 10 },
-        { suit: 'spades', rank: 'A', value: 11 }
+        { suit: 'spades', rank: 'A', value: 11 },
       ]
-      
+
       const result = BlackjackEngine.calculateHandValue(cards)
       expect(result.value).toBe(21)
       expect(result.isBlackjack).toBe(true)
@@ -69,9 +69,9 @@ describe('BlackjackEngine', () => {
       const cards: Card[] = [
         { suit: 'hearts', rank: '10', value: 10 },
         { suit: 'spades', rank: '5', value: 5 },
-        { suit: 'clubs', rank: 'A', value: 11 }
+        { suit: 'clubs', rank: 'A', value: 11 },
       ]
-      
+
       const result = BlackjackEngine.calculateHandValue(cards)
       expect(result.value).toBe(16) // Ace counts as 1
       expect(result.isBusted).toBe(false)
@@ -81,9 +81,9 @@ describe('BlackjackEngine', () => {
       const cards: Card[] = [
         { suit: 'hearts', rank: '10', value: 10 },
         { suit: 'spades', rank: '8', value: 8 },
-        { suit: 'clubs', rank: '7', value: 7 }
+        { suit: 'clubs', rank: '7', value: 7 },
       ]
-      
+
       const result = BlackjackEngine.calculateHandValue(cards)
       expect(result.value).toBe(25)
       expect(result.isBusted).toBe(true)
@@ -115,7 +115,7 @@ describe('BlackjackEngine', () => {
       while (!bustGame.playerHand.isBusted && bustGame.gameState === 'player-turn') {
         bustGame = BlackjackEngine.playerHit(bustGame)
       }
-      
+
       if (bustGame.playerHand.isBusted) {
         expect(bustGame.gameState).toBe('game-over')
       }
@@ -127,16 +127,16 @@ describe('BlackjackEngine', () => {
       const dealtGame = BlackjackEngine.dealInitialCards(gameState)
       const standGame = BlackjackEngine.playerStand(dealtGame)
       const dealerGame = BlackjackEngine.playDealerTurn(standGame)
-      
+
       expect(dealerGame.gameState).toBe('game-over')
-      expect(dealerGame.dealerHand.cards.every(card => !card.isHidden)).toBe(true)
+      expect(dealerGame.dealerHand.cards.every((card) => !card.isHidden)).toBe(true)
     })
 
     it('should follow dealer hit/stand rules', () => {
       const dealtGame = BlackjackEngine.dealInitialCards(gameState)
       const standGame = BlackjackEngine.playerStand(dealtGame)
       const dealerGame = BlackjackEngine.playDealerTurn(standGame)
-      
+
       // Dealer should stand on 17 or higher
       expect(dealerGame.dealerHand.value >= 17 || dealerGame.dealerHand.isBusted).toBe(true)
     })
@@ -151,26 +151,26 @@ describe('BlackjackEngine', () => {
         playerHand: {
           cards: [
             { suit: 'hearts', rank: 'A', value: 11 },
-            { suit: 'spades', rank: 'K', value: 10 }
+            { suit: 'spades', rank: 'K', value: 10 },
           ],
           value: 21,
           isBusted: false,
           isBlackjack: true,
-          isSoft: true
+          isSoft: true,
         },
         dealerHand: {
           cards: [
             { suit: 'clubs', rank: '10', value: 10 },
-            { suit: 'diamonds', rank: '9', value: 9 }
+            { suit: 'diamonds', rank: '9', value: 9 },
           ],
           value: 19,
           isBusted: false,
           isBlackjack: false,
-          isSoft: false
+          isSoft: false,
         },
-        currentBet: 100
+        currentBet: 100,
       }
-      
+
       const result = BlackjackEngine.determineGameResult(playerBlackjack)
       expect(result.playerWins).toBe(true)
       expect(result.winnings).toBe(250) // 100 bet + 150 (3:2 payout)
@@ -186,18 +186,18 @@ describe('BlackjackEngine', () => {
           value: 20,
           isBusted: false,
           isBlackjack: false,
-          isSoft: false
+          isSoft: false,
         },
         dealerHand: {
           cards: [],
           value: 20,
           isBusted: false,
           isBlackjack: false,
-          isSoft: false
+          isSoft: false,
         },
-        currentBet: 100
+        currentBet: 100,
       }
-      
+
       const result = BlackjackEngine.determineGameResult(pushGame)
       expect(result.isDraw).toBe(true)
       expect(result.winnings).toBe(100) // Bet returned
@@ -215,9 +215,9 @@ describe('BlackjackEngine', () => {
         { suit: 'hearts', rank: 'A', value: 11 },
         { suit: 'spades', rank: 'A', value: 11 },
         { suit: 'clubs', rank: 'A', value: 11 },
-        { suit: 'diamonds', rank: '8', value: 8 }
+        { suit: 'diamonds', rank: '8', value: 8 },
       ]
-      
+
       const result = BlackjackEngine.calculateHandValue(multipleAces)
       expect(result.value).toBe(21) // A(11) + A(1) + A(1) + 8 = 21
       expect(result.isSoft).toBe(true)
@@ -230,20 +230,20 @@ describe('Full Game Integration', () => {
   it('should play a complete game', () => {
     // Initialize game
     let game = BlackjackEngine.initializeGame(100)
-    
+
     // Deal initial cards
     game = BlackjackEngine.dealInitialCards(game)
     expect(game.playerHand.cards).toHaveLength(2)
     expect(game.dealerHand.cards).toHaveLength(2)
-    
+
     // Player stands (simple strategy)
     game = BlackjackEngine.playerStand(game)
     expect(game.gameState).toBe('dealer-turn')
-    
+
     // Dealer plays
     game = BlackjackEngine.playDealerTurn(game)
     expect(game.gameState).toBe('game-over')
-    
+
     // Complete game
     game = BlackjackEngine.completeGame(game)
     expect(game.gameResult).toBeDefined()

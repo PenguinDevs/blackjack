@@ -22,15 +22,15 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
     dealerHand: { cards: [], value: 0, isBusted: false, isBlackjack: false, isSoft: false },
     currentBet: 0,
     availableActions: [],
-    deck: []
+    deck: [],
   })
-  
+
   const [bettingState, setBettingState] = useState<BettingState>({
     amount: 100,
     showBettingOptions: false,
-    isPlacingBet: false
+    isPlacingBet: false,
   })
-  
+
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -38,19 +38,19 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
     try {
       setError(null)
       setIsLoading(true)
-      setBettingState(prev => ({ ...prev, isPlacingBet: true }))
+      setBettingState((prev) => ({ ...prev, isPlacingBet: true }))
 
       // Initialize game with bet
       let newGameState = BlackjackEngine.initializeGame(betAmount)
-      
+
       // Deal initial cards
       newGameState = BlackjackEngine.dealInitialCards(newGameState)
-      
+
       setGameState(newGameState)
-      setBettingState(prev => ({ 
-        ...prev, 
+      setBettingState((prev) => ({
+        ...prev,
         isPlacingBet: false,
-        showBettingOptions: false 
+        showBettingOptions: false,
       }))
 
       // If player has blackjack, automatically play dealer turn
@@ -61,11 +61,11 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to start game')
-      setBettingState(prev => ({ ...prev, isPlacingBet: false }))
+      setBettingState((prev) => ({ ...prev, isPlacingBet: false }))
     } finally {
       setIsLoading(false)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const playerHit = useCallback(async () => {
@@ -104,19 +104,19 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
       setError(err instanceof Error ? err.message : 'Failed to stand')
       setIsLoading(false)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState])
 
   const playDealerTurn = useCallback(async (currentGameState: BlackjackGameState) => {
     try {
       // Simulate dealer thinking time
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
       let newGameState = BlackjackEngine.playDealerTurn(currentGameState)
       setGameState(newGameState)
 
       // Complete game and show result
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
       newGameState = BlackjackEngine.completeGame(newGameState)
       setGameState(newGameState)
     } catch (err) {
@@ -133,12 +133,12 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
       dealerHand: { cards: [], value: 0, isBusted: false, isBlackjack: false, isSoft: false },
       currentBet: 0,
       availableActions: [],
-      deck: []
+      deck: [],
     })
-    setBettingState(prev => ({ 
-      ...prev, 
+    setBettingState((prev) => ({
+      ...prev,
       showBettingOptions: false,
-      isPlacingBet: false 
+      isPlacingBet: false,
     }))
     setError(null)
   }, [])
@@ -151,7 +151,7 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
     startNewGame,
     playerHit,
     playerStand,
-    resetGame
+    resetGame,
   }
 }
 
@@ -160,25 +160,25 @@ export function useBettingState(initialAmount: number = 100) {
   const [bettingState, setBettingState] = useState<BettingState>({
     amount: initialAmount,
     showBettingOptions: false,
-    isPlacingBet: false
+    isPlacingBet: false,
   })
 
   const setBetAmount = useCallback((amount: number) => {
-    setBettingState(prev => ({ ...prev, amount }))
+    setBettingState((prev) => ({ ...prev, amount }))
   }, [])
 
   const setShowBettingOptions = useCallback((show: boolean) => {
-    setBettingState(prev => ({ ...prev, showBettingOptions: show }))
+    setBettingState((prev) => ({ ...prev, showBettingOptions: show }))
   }, [])
 
   const setIsPlacingBet = useCallback((placing: boolean) => {
-    setBettingState(prev => ({ ...prev, isPlacingBet: placing }))
+    setBettingState((prev) => ({ ...prev, isPlacingBet: placing }))
   }, [])
 
   return {
     bettingState,
     setBetAmount,
     setShowBettingOptions,
-    setIsPlacingBet
+    setIsPlacingBet,
   }
 }

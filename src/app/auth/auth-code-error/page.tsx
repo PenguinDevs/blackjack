@@ -4,11 +4,10 @@ export default function AuthCodeError() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">
-              Authentication Error
-            </h2>
+            <h2 className="text-2xl font-bold text-red-600 mb-4">Authentication Error</h2>
             <p className="text-gray-600 mb-6">
-              Sorry, we couldn&apos;t log you in. There was an error with the authentication process.
+              Sorry, we couldn&apos;t log you in. There was an error with the authentication
+              process.
             </p>
             <a
               href="/auth/login"

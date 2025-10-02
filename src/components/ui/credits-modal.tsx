@@ -31,7 +31,7 @@ export function CreditsModal({ open, onOpenChange }: CreditsModalProps) {
   const handlePurchase = async (amount: number) => {
     setPurchaseLoading(amount)
     setSuccessMessage(null)
-    
+
     try {
       const success = await addCredits(amount)
       if (success) {
@@ -58,13 +58,14 @@ export function CreditsModal({ open, onOpenChange }: CreditsModalProps) {
             Add more credits to your account to continue playing. All credits are free!
           </DialogDescription>
         </DialogHeader>
-        
+
         {/* Current Credits Display */}
         <div className="flex items-center justify-center p-4 bg-muted rounded-lg">
           <div className="flex items-center space-x-2">
             <Coins className="h-6 w-6 text-yellow-500" />
             <span className="text-lg font-semibold">
-              Current Credits: {creditsLoading ? (
+              Current Credits:{' '}
+              {creditsLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin inline ml-1" />
               ) : (
                 credits.toLocaleString()
@@ -80,7 +81,7 @@ export function CreditsModal({ open, onOpenChange }: CreditsModalProps) {
             <span className="font-medium">{successMessage}</span>
           </div>
         )}
-        
+
         {error && (
           <div className="flex items-center space-x-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-800">
             <AlertCircle className="h-5 w-5" />
@@ -91,12 +92,9 @@ export function CreditsModal({ open, onOpenChange }: CreditsModalProps) {
         <div className="grid gap-4 py-4">
           <div className="space-y-3">
             {creditOptions.map(({ amount, label }) => (
-              <div
-                key={amount}
-                className="flex justify-between items-center p-3 border rounded-lg"
-              >
+              <div key={amount} className="flex justify-between items-center p-3 border rounded-lg">
                 <p className="font-medium">{label}</p>
-                <Button 
+                <Button
                   onClick={() => handlePurchase(amount)}
                   disabled={purchaseLoading !== null || creditsLoading || !!successMessage}
                   className="min-w-[80px]"

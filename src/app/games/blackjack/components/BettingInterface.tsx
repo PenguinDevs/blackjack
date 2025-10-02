@@ -19,14 +19,19 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
   credits,
   onBetChange,
   onPlaceBet,
-  onShowBettingOptions
+  onShowBettingOptions,
 }) => {
   const bettingModalRef = useRef<HTMLDivElement>(null)
   const currentBetRef = useRef<HTMLDivElement>(null)
   const bettingButtonsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (bettingState.showBettingOptions && bettingModalRef.current && currentBetRef.current && bettingButtonsRef.current) {
+    if (
+      bettingState.showBettingOptions &&
+      bettingModalRef.current &&
+      currentBetRef.current &&
+      bettingButtonsRef.current
+    ) {
       GameAnimations.animateBettingModal(
         bettingModalRef.current,
         currentBetRef.current,
@@ -48,7 +53,7 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
 
   const handleManualBetChange = (value: string) => {
     const numericValue = value.replace(/[^0-9]/g, '')
-    
+
     if (numericValue) {
       const newBet = parseInt(numericValue, 10)
       if (newBet <= credits && newBet > 0) {
@@ -65,20 +70,17 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
 
   const handleMouseLeave = () => {
     if (bettingState.showBettingOptions && bettingModalRef.current) {
-      GameAnimations.animateBettingModalCollapse(bettingModalRef.current)
-        .then(() => onShowBettingOptions(false))
+      GameAnimations.animateBettingModalCollapse(bettingModalRef.current).then(() =>
+        onShowBettingOptions(false)
+      )
     }
   }
 
   return (
     <div className="absolute inset-0 flex items-center justify-center">
-      <div 
-        className="relative"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
+      <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         {/* Always Visible Button */}
-        <Button 
+        <Button
           onClick={onPlaceBet}
           size="lg"
           className="text-2xl px-12 py-6 bg-white text-black hover:bg-gray-100 font-bold relative z-40"
@@ -89,22 +91,22 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
 
         {/* Betting Modal */}
         {bettingState.showBettingOptions && (
-          <div 
+          <div
             ref={bettingModalRef}
             className="absolute top-1/2 left-1/2 bg-black/90 backdrop-blur-sm rounded-lg border border-gray-600 shadow-2xl p-6 pt-12 flex flex-col justify-start items-center z-30"
-            style={{ 
+            style={{
               opacity: 0,
               transform: 'translate(-50%, -50%) scaleX(0.1) scaleY(0.1)',
               transformOrigin: '50% 50%',
               top: '-90px',
               width: '400px',
-              height: '400px'
+              height: '400px',
             }}
           >
             {/* Modal Header */}
             <div ref={currentBetRef} className="mb-6 text-center">
               <h3 className="text-xl font-bold text-white mb-4">Place Your Bet</h3>
-              
+
               <div className="mb-3">
                 <Input
                   type="text"
@@ -122,7 +124,7 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
             <div ref={bettingButtonsRef} className="mb-6">
               <p className="text-sm text-gray-300 mb-3 text-center">Quick adjustments:</p>
               <div className="flex gap-3 justify-center">
-                <Button 
+                <Button
                   onClick={() => increaseBet(5)}
                   variant="outline"
                   size="sm"
@@ -131,7 +133,7 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
                 >
                   +5
                 </Button>
-                <Button 
+                <Button
                   onClick={() => increaseBet(25)}
                   variant="outline"
                   size="sm"
@@ -140,7 +142,7 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
                 >
                   +25
                 </Button>
-                <Button 
+                <Button
                   onClick={() => increaseBet(100)}
                   variant="outline"
                   size="sm"

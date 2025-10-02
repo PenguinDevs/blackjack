@@ -14,12 +14,14 @@ export async function initializeBlackjackGame(betAmount: number): Promise<Blackj
     gameState = BlackjackEngine.dealInitialCards(gameState)
     return gameState
   } catch (error) {
-    throw new Error(`Failed to initialize game: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    throw new Error(
+      `Failed to initialize game: ${error instanceof Error ? error.message : 'Unknown error'}`
+    )
   }
 }
 
 export async function executePlayerAction(
-  gameState: BlackjackGameState, 
+  gameState: BlackjackGameState,
   action: PlayerAction
 ): Promise<BlackjackGameState> {
   try {
@@ -31,7 +33,7 @@ export async function executePlayerAction(
         break
       case 'stand':
         newGameState = BlackjackEngine.playerStand(gameState)
-        
+
         // If player stands, automatically play dealer turn
         if (newGameState.gameState === 'dealer-turn') {
           newGameState = BlackjackEngine.playDealerTurn(newGameState)
@@ -49,7 +51,9 @@ export async function executePlayerAction(
 
     return newGameState
   } catch (error) {
-    throw new Error(`Failed to execute action: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    throw new Error(
+      `Failed to execute action: ${error instanceof Error ? error.message : 'Unknown error'}`
+    )
   }
 }
 
@@ -98,13 +102,13 @@ export async function validateGameState(gameState: BlackjackGameState): Promise<
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     }
   } catch (error) {
     errors.push(`Validation error: ${error instanceof Error ? error.message : 'Unknown error'}`)
     return {
       isValid: false,
-      errors
+      errors,
     }
   }
 }
@@ -119,8 +123,8 @@ export async function calculateGameStatistics(gameStates: BlackjackGameState[]):
   averageBet: number
   blackjackCount: number
 }> {
-  const completedGames = gameStates.filter(state => 
-    state.gameState === 'game-over' && state.gameResult
+  const completedGames = gameStates.filter(
+    (state) => state.gameState === 'game-over' && state.gameResult
   )
 
   const stats = {
@@ -131,7 +135,7 @@ export async function calculateGameStatistics(gameStates: BlackjackGameState[]):
     winRate: 0,
     totalWinnings: 0,
     averageBet: 0,
-    blackjackCount: 0
+    blackjackCount: 0,
   }
 
   if (completedGames.length === 0) {
@@ -142,7 +146,7 @@ export async function calculateGameStatistics(gameStates: BlackjackGameState[]):
 
   for (const gameState of completedGames) {
     const result = gameState.gameResult!
-    
+
     if (result.playerWins) {
       stats.totalWins++
     } else if (result.isDraw) {

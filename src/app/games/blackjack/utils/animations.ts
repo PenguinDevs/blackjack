@@ -39,21 +39,27 @@ export class GameAnimations {
         opacity: 1,
         transform: 'translate(-50%, -50%) scaleX(0.1) scaleY(0.1)',
         transformOrigin: '50% 50%',
-        duration: 0
+        duration: 0,
       })
-      
+
       animate(header, { opacity: 0, translateY: '20px', duration: 0 })
       animate(buttons, { opacity: 0, translateY: '20px', duration: 0 })
 
       // Step 1: Expand horizontally
       animate(modal, {
-        transform: ['translate(-50%, -20%) scaleX(0.1) scaleY(0.1)', 'translate(-50%, -20%) scaleX(1) scaleY(0.1)'],
+        transform: [
+          'translate(-50%, -20%) scaleX(0.1) scaleY(0.1)',
+          'translate(-50%, -20%) scaleX(1) scaleY(0.1)',
+        ],
         duration: 200,
         ease: 'out(2)',
         onComplete: () => {
           // Step 2: Expand vertically
           animate(modal, {
-            transform: ['translate(-50%, -20%) scaleX(1) scaleY(0.1)', 'translate(-50%, -50%) scaleX(1) scaleY(1)'],
+            transform: [
+              'translate(-50%, -20%) scaleX(1) scaleY(0.1)',
+              'translate(-50%, -50%) scaleX(1) scaleY(1)',
+            ],
             duration: 300,
             ease: 'out(2)',
             onComplete: () => {
@@ -61,19 +67,19 @@ export class GameAnimations {
               animate(header, {
                 opacity: [0, 1],
                 translateY: ['20px', '0px'],
-                duration: 300
+                duration: 300,
               })
-              
+
               animate(buttons, {
                 opacity: [0, 1],
                 translateY: ['20px', '0px'],
                 duration: 300,
                 delay: 20,
-                onComplete: () => resolve()
+                onComplete: () => resolve(),
               })
-            }
+            },
           })
-        }
+        },
       })
     })
   }
@@ -84,11 +90,14 @@ export class GameAnimations {
   static animateBettingModalCollapse(modal: HTMLElement): Promise<void> {
     return new Promise((resolve) => {
       animate(modal, {
-        transform: ['translate(-50%, -50%) scaleX(1) scaleY(1)', 'translate(-50%, -50%) scaleX(0.1) scaleY(0.1)'],
+        transform: [
+          'translate(-50%, -50%) scaleX(1) scaleY(1)',
+          'translate(-50%, -50%) scaleX(0.1) scaleY(0.1)',
+        ],
         opacity: [1, 0],
         duration: 300,
         ease: 'in(2)',
-        onComplete: () => resolve()
+        onComplete: () => resolve(),
       })
     })
   }
@@ -96,11 +105,14 @@ export class GameAnimations {
   /**
    * Animates card dealing
    */
-  static animateCardDeal(cardElement: HTMLElement, config: {
-    from: { x: number; y: number; rotation?: number }
-    to: { x: number; y: number; rotation?: number }
-    delay?: number
-  }): Promise<void> {
+  static animateCardDeal(
+    cardElement: HTMLElement,
+    config: {
+      from: { x: number; y: number; rotation?: number }
+      to: { x: number; y: number; rotation?: number }
+      delay?: number
+    }
+  ): Promise<void> {
     return new Promise((resolve) => {
       // Set initial position
       animate(cardElement, {
@@ -109,7 +121,7 @@ export class GameAnimations {
         rotate: config.from.rotation || 0,
         scale: 0.8,
         opacity: 0,
-        duration: 0
+        duration: 0,
       })
 
       // Animate to final position
@@ -122,7 +134,7 @@ export class GameAnimations {
         duration: 600,
         delay: config.delay || 0,
         ease: 'out(3)',
-        onComplete: () => resolve()
+        onComplete: () => resolve(),
       })
     })
   }
@@ -142,9 +154,9 @@ export class GameAnimations {
             rotateY: [90, 0],
             duration: 200,
             ease: 'out(2)',
-            onComplete: () => resolve()
+            onComplete: () => resolve(),
           })
-        }
+        },
       })
     })
   }
@@ -158,7 +170,7 @@ export class GameAnimations {
         scale: [1, 1.2, 1],
         duration: 400,
         ease: 'out(2)',
-        onComplete: () => resolve()
+        onComplete: () => resolve(),
       })
     })
   }
@@ -169,13 +181,13 @@ export class GameAnimations {
   static animateResult(element: HTMLElement, isWin: boolean): Promise<void> {
     return new Promise((resolve) => {
       const color = isWin ? '#22c55e' : '#ef4444' // green for win, red for loss
-      
+
       animate(element, {
         scale: [1, 1.1, 1],
         color: [color, color],
         duration: 800,
         ease: 'out(2)',
-        onComplete: () => resolve()
+        onComplete: () => resolve(),
       })
     })
   }
@@ -186,13 +198,13 @@ export class GameAnimations {
   static animateCreditsUpdate(element: HTMLElement, isIncrease: boolean): Promise<void> {
     return new Promise((resolve) => {
       const direction = isIncrease ? -10 : 10
-      
+
       animate(element, {
         translateY: [0, direction, 0],
         scale: [1, 1.05, 1],
         duration: 500,
         ease: 'out(2)',
-        onComplete: () => resolve()
+        onComplete: () => resolve(),
       })
     })
   }
@@ -201,13 +213,19 @@ export class GameAnimations {
    * Staggered animation for multiple cards
    */
   static animateMultipleCards(
-    cards: { element: HTMLElement; config: CardAnimation['config'] & { from: { x: number; y: number; rotation?: number }; to: { x: number; y: number; rotation?: number } } }[]
+    cards: {
+      element: HTMLElement
+      config: CardAnimation['config'] & {
+        from: { x: number; y: number; rotation?: number }
+        to: { x: number; y: number; rotation?: number }
+      }
+    }[]
   ): Promise<void[]> {
     return Promise.all(
-      cards.map((card, index) => 
+      cards.map((card, index) =>
         this.animateCardDeal(card.element, {
           ...card.config,
-          delay: (card.config.delay || 0) + (index * 150) // Stagger by 150ms
+          delay: (card.config.delay || 0) + index * 150, // Stagger by 150ms
         })
       )
     )
@@ -222,7 +240,7 @@ export class GameAnimations {
         scale: [1, intensity, 1],
         duration: 600,
         ease: 'out(2)',
-        onComplete: () => resolve()
+        onComplete: () => resolve(),
       })
     })
   }

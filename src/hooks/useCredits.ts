@@ -11,12 +11,12 @@ class CreditsEventEmitter {
   subscribe(callback: () => void) {
     this.listeners.push(callback)
     return () => {
-      this.listeners = this.listeners.filter(listener => listener !== callback)
+      this.listeners = this.listeners.filter((listener) => listener !== callback)
     }
   }
 
   emit() {
-    this.listeners.forEach(callback => callback())
+    this.listeners.forEach((callback) => callback())
   }
 }
 

@@ -19,11 +19,16 @@ export class GameUtils {
    */
   static getRankName(rank: Rank): string {
     switch (rank) {
-      case 'A': return 'Ace'
-      case 'J': return 'Jack'
-      case 'Q': return 'Queen'
-      case 'K': return 'King'
-      default: return rank
+      case 'A':
+        return 'Ace'
+      case 'J':
+        return 'Jack'
+      case 'Q':
+        return 'Queen'
+      case 'K':
+        return 'King'
+      default:
+        return rank
     }
   }
 
@@ -32,11 +37,16 @@ export class GameUtils {
    */
   static getSuitName(suit: Suit): string {
     switch (suit) {
-      case 'hearts': return 'Hearts'
-      case 'diamonds': return 'Diamonds'
-      case 'clubs': return 'Clubs'
-      case 'spades': return 'Spades'
-      default: return suit
+      case 'hearts':
+        return 'Hearts'
+      case 'diamonds':
+        return 'Diamonds'
+      case 'clubs':
+        return 'Clubs'
+      case 'spades':
+        return 'Spades'
+      default:
+        return suit
     }
   }
 
@@ -45,11 +55,16 @@ export class GameUtils {
    */
   static getSuitSymbol(suit: Suit): string {
     switch (suit) {
-      case 'hearts': return '♥'
-      case 'diamonds': return '♦'
-      case 'clubs': return '♣'
-      case 'spades': return '♠'
-      default: return ''
+      case 'hearts':
+        return '♥'
+      case 'diamonds':
+        return '♦'
+      case 'clubs':
+        return '♣'
+      case 'spades':
+        return '♠'
+      default:
+        return ''
     }
   }
 
@@ -89,12 +104,12 @@ export class GameUtils {
    */
   static describeHand(cards: Card[]): string {
     if (cards.length === 0) return 'Empty hand'
-    
-    const visibleCards = cards.filter(card => !card.isHidden)
+
+    const visibleCards = cards.filter((card) => !card.isHidden)
     if (visibleCards.length === 0) return 'Hidden cards'
-    
-    const cardNames = visibleCards.map(card => this.formatCardName(card))
-    
+
+    const cardNames = visibleCards.map((card) => this.formatCardName(card))
+
     if (cardNames.length === 1) {
       return cardNames[0]
     } else if (cardNames.length === 2) {
@@ -108,50 +123,59 @@ export class GameUtils {
   /**
    * Validate bet amount
    */
-  static validateBet(amount: number, minBet: number, maxBet: number, availableCredits: number): {
+  static validateBet(
+    amount: number,
+    minBet: number,
+    maxBet: number,
+    availableCredits: number
+  ): {
     isValid: boolean
     error?: string
   } {
     if (amount < minBet) {
       return {
         isValid: false,
-        error: `Minimum bet is ${this.formatCredits(minBet)} credits`
+        error: `Minimum bet is ${this.formatCredits(minBet)} credits`,
       }
     }
-    
+
     if (amount > maxBet) {
       return {
         isValid: false,
-        error: `Maximum bet is ${this.formatCredits(maxBet)} credits`
+        error: `Maximum bet is ${this.formatCredits(maxBet)} credits`,
       }
     }
-    
+
     if (amount > availableCredits) {
       return {
         isValid: false,
-        error: `Insufficient credits. You have ${this.formatCredits(availableCredits)} credits`
+        error: `Insufficient credits. You have ${this.formatCredits(availableCredits)} credits`,
       }
     }
-    
+
     return { isValid: true }
   }
 
   /**
    * Generate game summary
    */
-  static generateGameSummary(playerCards: Card[], dealerCards: Card[], result: {
-    playerWins: boolean
-    isDraw: boolean
-    winnings: number
-    reason: string
-  }): string {
+  static generateGameSummary(
+    playerCards: Card[],
+    dealerCards: Card[],
+    result: {
+      playerWins: boolean
+      isDraw: boolean
+      winnings: number
+      reason: string
+    }
+  ): string {
     const playerHand = this.describeHand(playerCards)
-    const dealerHand = this.describeHand(dealerCards.map(c => ({ ...c, isHidden: false })))
-    
+    const dealerHand = this.describeHand(dealerCards.map((c) => ({ ...c, isHidden: false })))
+
     let summary = `Player had: ${playerHand}\n`
     summary += `Dealer had: ${dealerHand}\n`
     summary += `Result: ${result.reason}\n`
-    
+
     if (result.playerWins) {
       summary += `You won ${this.formatCredits(result.winnings)} credits!`
     } else if (result.isDraw) {
@@ -159,7 +183,7 @@ export class GameUtils {
     } else {
       summary += 'You lost this round'
     }
-    
+
     return summary
   }
 
@@ -178,23 +202,27 @@ export class GameUtils {
   /**
    * Calculate optimal strategy hint (basic strategy)
    */
-  static getBasicStrategyHint(playerValue: number, dealerUpCard: number, playerHasSoftAce: boolean): string {
+  static getBasicStrategyHint(
+    playerValue: number,
+    dealerUpCard: number,
+    playerHasSoftAce: boolean
+  ): string {
     // Simplified basic strategy hints
     if (playerValue < 12) return 'Hit'
     if (playerValue > 16) return 'Stand'
-    
+
     if (playerHasSoftAce) {
       if (playerValue <= 17) return 'Hit'
       return 'Stand'
     }
-    
+
     // Hard totals
     if (playerValue <= 11) return 'Hit'
     if (playerValue === 12 && [2, 3, 7, 8, 9, 10, 11].includes(dealerUpCard)) return 'Hit'
     if (playerValue === 12) return 'Stand'
     if (playerValue <= 16 && dealerUpCard >= 7) return 'Hit'
     if (playerValue <= 16 && dealerUpCard <= 6) return 'Stand'
-    
+
     return 'Stand'
   }
 }
@@ -211,7 +239,7 @@ export const GAME_CONSTANTS = {
   BLACKJACK_VALUE: 21,
   ACE_HIGH_VALUE: 11,
   ACE_LOW_VALUE: 1,
-  FACE_CARD_VALUE: 10
+  FACE_CARD_VALUE: 10,
 } as const
 
 /**
@@ -223,5 +251,5 @@ export const ANIMATION_TIMINGS = {
   BETTING_MODAL: 500,
   HAND_UPDATE: 300,
   RESULT_DISPLAY: 800,
-  STAGGER_DELAY: 150
+  STAGGER_DELAY: 150,
 } as const

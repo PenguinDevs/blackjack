@@ -10,11 +10,16 @@ interface CardProps {
 export const Card: React.FC<CardProps> = ({ card, className = '', onClick }) => {
   const getSuitSymbol = (suit: CardType['suit']): string => {
     switch (suit) {
-      case 'hearts': return '♥'
-      case 'diamonds': return '♦'
-      case 'clubs': return '♣'
-      case 'spades': return '♠'
-      default: return ''
+      case 'hearts':
+        return '♥'
+      case 'diamonds':
+        return '♦'
+      case 'clubs':
+        return '♣'
+      case 'spades':
+        return '♠'
+      default:
+        return ''
     }
   }
 
@@ -28,7 +33,7 @@ export const Card: React.FC<CardProps> = ({ card, className = '', onClick }) => 
 
   if (card.isHidden) {
     return (
-      <div 
+      <div
         className={`w-16 h-24 bg-blue-600 border-2 border-blue-700 rounded-lg flex items-center justify-center cursor-pointer transition-transform hover:scale-105 ${className}`}
         onClick={onClick}
       >
@@ -40,16 +45,14 @@ export const Card: React.FC<CardProps> = ({ card, className = '', onClick }) => 
   }
 
   return (
-    <div 
+    <div
       className={`w-16 h-24 bg-white border-2 border-gray-300 rounded-lg flex flex-col items-center justify-between p-1 cursor-pointer transition-transform hover:scale-105 shadow-md ${className}`}
       onClick={onClick}
     >
       <div className={`text-xs font-bold ${getSuitColor(card.suit)}`}>
         {getDisplayRank(card.rank)}
       </div>
-      <div className={`text-2xl ${getSuitColor(card.suit)}`}>
-        {getSuitSymbol(card.suit)}
-      </div>
+      <div className={`text-2xl ${getSuitColor(card.suit)}`}>{getSuitSymbol(card.suit)}</div>
       <div className={`text-xs font-bold transform rotate-180 ${getSuitColor(card.suit)}`}>
         {getDisplayRank(card.rank)}
       </div>
@@ -70,15 +73,13 @@ export const Hand: React.FC<HandProps> = ({ cards, label, value, className = '',
     <div className={`text-center ${className}`}>
       <h3 className="text-xl font-bold text-white mb-2">{label}</h3>
       {value !== undefined && (
-        <div className="text-lg font-semibold text-white mb-3">
-          Value: {value}
-        </div>
+        <div className="text-lg font-semibold text-white mb-3">Value: {value}</div>
       )}
       <div className="flex justify-center space-x-2">
         {cards.map((card, index) => (
-          <Card 
+          <Card
             key={`${card.suit}-${card.rank}-${index}`}
-            card={card} 
+            card={card}
             onClick={() => onCardClick?.(index)}
           />
         ))}

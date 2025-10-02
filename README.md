@@ -32,6 +32,7 @@ A modern, multiplayer Blackjack game built with Next.js, Supabase, and TypeScrip
 ### Local Development Setup
 
 1. **Clone and install**
+
    ```bash
    git clone https://github.com/PenguinDevs/blackjack.git
    cd blackjack
@@ -39,20 +40,23 @@ A modern, multiplayer Blackjack game built with Next.js, Supabase, and TypeScrip
    ```
 
 2. **Set up Supabase**
+
    ```bash
    # Start local Supabase (requires Docker)
    npx supabase start
-   
+
    # Or create a project at https://supabase.com
    ```
 
 3. **Configure environment**
+
    ```bash
    cp .env.example .env.local
    # Edit .env.local with your Supabase credentials
    ```
 
 4. **Run database migrations**
+
    ```bash
    npx supabase db reset  # Local development
    # OR
@@ -73,14 +77,17 @@ Visit [http://localhost:3000](http://localhost:3000) to see the app!
 Configure OAuth providers in your Supabase dashboard:
 
 **Google OAuth:**
+
 1. [Google Cloud Console](https://console.cloud.google.com) → Create OAuth credentials
 2. Redirect URI: `https://[project].supabase.co/auth/v1/callback`
 
 **Discord OAuth:**
+
 1. [Discord Developer Portal](https://discord.com/developers) → Create application
 2. Redirect URI: `https://[project].supabase.co/auth/v1/callback`
 
 **GitHub OAuth:**
+
 1. GitHub Settings → Developer settings → OAuth Apps
 2. Redirect URI: `https://[project].supabase.co/auth/v1/callback`
 
@@ -105,6 +112,7 @@ vercel
 ```
 
 **Required Environment Variables:**
+
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
@@ -112,6 +120,7 @@ vercel
 ### GitHub Actions
 
 Comprehensive CI/CD pipeline includes:
+
 - Code quality checks (ESLint, Prettier, TypeScript)
 - Automated testing (Unit, Integration, E2E)
 - Performance monitoring (Lighthouse CI)
@@ -123,11 +132,13 @@ Comprehensive CI/CD pipeline includes:
 **Objective:** Get as close to 21 as possible without going over!
 
 **Card Values:**
+
 - Number cards: Face value
 - Face cards (J, Q, K): 10 points
 - Aces: 1 or 11 points
 
 **Game Flow:**
+
 1. Receive 2 initial cards
 2. Choose to Hit (take card) or Stand (keep hand)
 3. Dealer plays after all players

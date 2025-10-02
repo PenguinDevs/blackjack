@@ -7,11 +7,13 @@ This feature handles the case when a user tries to sign up with an email that al
 When a user attempts to sign up with an email that already exists, Supabase's behavior depends on your project's email confirmation settings:
 
 ### Case 1: Email confirmation is enabled (default)
+
 - Supabase returns a response with `data.user` but `data.session` is `null`
 - The `data.user.identities` array is empty, indicating an existing user
 - No error is thrown
 
-### Case 2: Email confirmation is disabled  
+### Case 2: Email confirmation is disabled
+
 - Supabase returns an error with the message "User already registered"
 
 ## Implementation
@@ -36,8 +38,9 @@ When a user tries to sign up with an existing email:
 ## Testing
 
 The feature includes comprehensive tests covering:
+
 - Obfuscated response handling (email confirmation enabled)
-- Error response handling (email confirmation disabled)  
+- Error response handling (email confirmation disabled)
 - UI interaction with the "Switch to Sign In" button
 - Form mode toggling functionality
 

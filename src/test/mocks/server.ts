@@ -15,26 +15,26 @@ export const handlers = [
         email: 'test@example.com',
         user_metadata: {
           full_name: 'Test User',
-          avatar_url: 'https://example.com/avatar.jpg'
-        }
-      }
+          avatar_url: 'https://example.com/avatar.jpg',
+        },
+      },
     })
   }),
-  
+
   http.get('*/auth/v1/user', () => {
     return HttpResponse.json({
       id: 'mock-user-id',
       email: 'test@example.com',
       user_metadata: {
         full_name: 'Test User',
-        avatar_url: 'https://example.com/avatar.jpg'
-      }
+        avatar_url: 'https://example.com/avatar.jpg',
+      },
     })
   }),
-  
+
   http.post('*/auth/v1/logout', () => {
     return HttpResponse.json({})
-  })
+  }),
 ]
 
 // Create MSW server

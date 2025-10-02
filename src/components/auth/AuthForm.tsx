@@ -50,17 +50,22 @@ export function AuthForm({ mode, onToggleMode }: AuthFormProps) {
           email,
           password,
         })
-        
+
         if (error) throw error
-        
+
         // Check if user already exists based on the response structure
         // When email confirmation is enabled and user exists, Supabase returns
         // data.user but data.session is null, and the user might be obfuscated
-        if (data.user && !data.session && data.user.identities && data.user.identities.length === 0) {
+        if (
+          data.user &&
+          !data.session &&
+          data.user.identities &&
+          data.user.identities.length === 0
+        ) {
           // This indicates the user already exists (obfuscated response)
           setAccountExistsError({
             type: 'account-exists',
-            message: `An account with this email already exists.`
+            message: `An account with this email already exists.`,
           })
         } else {
           setMessage('Check your email for the confirmation link!')
@@ -68,16 +73,17 @@ export function AuthForm({ mode, onToggleMode }: AuthFormProps) {
       }
     } catch (error) {
       const authError = error as AuthError
-      
+
       // Handle the case where user already exists during sign up (when email confirmation is disabled)
-      if (mode === 'signup' && (
-        authError.message.toLowerCase().includes('user already registered') ||
-        authError.message.toLowerCase().includes('email already registered') ||
-        authError.message.toLowerCase().includes('already registered')
-      )) {
+      if (
+        mode === 'signup' &&
+        (authError.message.toLowerCase().includes('user already registered') ||
+          authError.message.toLowerCase().includes('email already registered') ||
+          authError.message.toLowerCase().includes('already registered'))
+      ) {
         setAccountExistsError({
           type: 'account-exists',
-          message: `An account with this email already exists.`
+          message: `An account with this email already exists.`,
         })
       } else {
         setError(authError.message)
@@ -121,9 +127,7 @@ export function AuthForm({ mode, onToggleMode }: AuthFormProps) {
             {mode === 'signin' ? 'Sign In' : 'Sign Up'} to Blackjack
           </CardTitle>
           {mode === 'signup' && (
-            <CardDescription>
-              Create a new account to start playing.
-            </CardDescription>
+            <CardDescription>Create a new account to start playing.</CardDescription>
           )}
         </CardHeader>
         <CardContent className="space-y-4">
@@ -222,11 +226,7 @@ export function AuthForm({ mode, onToggleMode }: AuthFormProps) {
           </div>
 
           <div className="text-center">
-            <Button
-              variant="link"
-              onClick={onToggleMode}
-              className="text-sm"
-            >
+            <Button variant="link" onClick={onToggleMode} className="text-sm">
               {mode === 'signin'
                 ? "Don't have an account? Sign up"
                 : 'Already have an account? Sign in'}

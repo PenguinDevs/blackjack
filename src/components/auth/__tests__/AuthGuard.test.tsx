@@ -9,11 +9,11 @@ vi.mock('@/lib/supabase', () => ({
     auth: {
       getSession: vi.fn(),
       onAuthStateChange: vi.fn(() => ({
-        data: { subscription: { unsubscribe: vi.fn() } }
+        data: { subscription: { unsubscribe: vi.fn() } },
       })),
-      signOut: vi.fn()
-    }
-  }
+      signOut: vi.fn(),
+    },
+  },
 }))
 
 describe('AuthGuard', () => {
@@ -21,9 +21,9 @@ describe('AuthGuard', () => {
     const supabaseModule = await import('@/lib/supabase')
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mockSupabase = supabaseModule.supabase as any
-    mockSupabase.auth.getSession.mockResolvedValue({ 
-      data: { session: { user: { id: 'test', email: 'test@example.com' } } }, 
-      error: null 
+    mockSupabase.auth.getSession.mockResolvedValue({
+      data: { session: { user: { id: 'test', email: 'test@example.com' } } },
+      error: null,
     })
 
     render(
@@ -33,10 +33,10 @@ describe('AuthGuard', () => {
         </AuthGuard>
       </AuthProvider>
     )
-    
+
     // Should show loading spinner initially
     expect(document.querySelector('.animate-spin')).toBeInTheDocument()
-    
+
     // Wait for protected content to appear
     await screen.findByText('Protected content')
   })
@@ -45,9 +45,9 @@ describe('AuthGuard', () => {
     const supabaseModule = await import('@/lib/supabase')
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mockSupabase = supabaseModule.supabase as any
-    mockSupabase.auth.getSession.mockResolvedValue({ 
-      data: { session: null }, 
-      error: null 
+    mockSupabase.auth.getSession.mockResolvedValue({
+      data: { session: null },
+      error: null,
     })
 
     render(
@@ -57,7 +57,7 @@ describe('AuthGuard', () => {
         </AuthGuard>
       </AuthProvider>
     )
-    
+
     await screen.findByText('Authentication Required')
     expect(screen.queryByText('Protected content')).not.toBeInTheDocument()
   })
@@ -66,9 +66,9 @@ describe('AuthGuard', () => {
     const supabaseModule = await import('@/lib/supabase')
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mockSupabase = supabaseModule.supabase as any
-    mockSupabase.auth.getSession.mockResolvedValue({ 
-      data: { session: null }, 
-      error: null 
+    mockSupabase.auth.getSession.mockResolvedValue({
+      data: { session: null },
+      error: null,
     })
 
     render(
@@ -78,7 +78,7 @@ describe('AuthGuard', () => {
         </AuthGuard>
       </AuthProvider>
     )
-    
+
     await screen.findByText('Custom login message')
     expect(screen.queryByText('Protected content')).not.toBeInTheDocument()
   })

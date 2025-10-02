@@ -19,15 +19,10 @@ export default function BlackjackPage() {
     startNewGame,
     playerHit,
     playerStand,
-    resetGame
+    resetGame,
   } = useBlackjackGame()
 
-  const {
-    bettingState,
-    setBetAmount,
-    setShowBettingOptions,
-    setIsPlacingBet
-  } = useBettingState()
+  const { bettingState, setBetAmount, setShowBettingOptions, setIsPlacingBet } = useBettingState()
 
   // Use local betting state for UI, game betting state for game logic
   const activeBettingState = gameState.gameState === 'waiting' ? bettingState : gameBettingState
@@ -66,9 +61,7 @@ export default function BlackjackPage() {
   return (
     <AuthGuard>
       <div className="min-h-screen bg-background">
-        <Navbar 
-          leftContent={<CreditsDisplay />} 
-        />
+        <Navbar leftContent={<CreditsDisplay />} />
 
         <main className="container mx-auto px-4 py-8 relative">
           {/* Error Display */}
