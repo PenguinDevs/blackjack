@@ -85,7 +85,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                 cards={gameState.playerHand.cards}
                 label="Your Hand"
                 value={gameState.playerHand.cards.length > 0 ? gameState.playerHand.value : undefined}
-                className="mb-4"
+                className="mb-10"
               />
               
               {/* Game Action Buttons */}

@@ -32,7 +32,7 @@ export const GameActions: React.FC<GameActionsProps> = ({
   const getActionVariant = (action: PlayerAction) => {
     switch (action) {
       case 'hit': return 'default'
-      case 'stand': return 'outline'
+      case 'stand': return 'default'
       default: return 'outline'
     }
   }
@@ -43,7 +43,7 @@ export const GameActions: React.FC<GameActionsProps> = ({
         <Button
           key={action}
           variant={getActionVariant(action) as any}
-          className="bg-white text-black hover:bg-gray-100 font-semibold px-6 py-2"
+          className="font-semibold px-6 py-2"
           onClick={() => onPlayerAction(action)}
           disabled={disabled}
         >
