@@ -30,8 +30,10 @@ export default function Home() {
           {/* Play Button */}
           <div className="flex justify-center w-full">
             {user ? (
-              <Button size="lg" className="uppercase text-2xl sm:text-4xl md:text-5xl lg:text-6xl px-6 sm:px-12 md:px-16 py-3 sm:py-6 md:py-8 h-auto rounded-xl font-bold w-auto min-w-fit">
-                Play
+              <Button size="lg" asChild className="uppercase text-2xl sm:text-4xl md:text-5xl lg:text-6xl px-6 sm:px-12 md:px-16 py-3 sm:py-6 md:py-8 h-auto rounded-xl font-bold w-auto min-w-fit">
+                <Link href="/game">
+                  Play
+                </Link>
               </Button>
             ) : (
               <Button size="lg" asChild className="uppercase text-xl sm:text-2xl md:text-3xl lg:text-4xl px-4 sm:px-6 md:px-8 py-3 sm:py-6 md:py-8 h-auto rounded-xl font-bold w-auto min-w-fit">
