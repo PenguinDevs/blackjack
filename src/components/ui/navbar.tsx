@@ -3,6 +3,7 @@
 import { useAuth } from '@/components/auth/AuthProvider'
 import { UserMenu } from '@/components/auth/UserMenu'
 import { Button } from '@/components/ui/button'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { Coins, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { ReactNode, useState } from 'react'
@@ -67,6 +68,7 @@ export function Navbar({ leftContent }: NavbarProps) {
             </Link>
           </div>
           <div className="flex items-center space-x-4">
+            <ThemeToggle />
             {user ? (
               <UserMenu />
             ) : (
