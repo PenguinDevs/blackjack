@@ -15,8 +15,6 @@ site_url = "http://localhost:3000"
 additional_redirect_urls = ["https://localhost:3000"]
 jwt_expiry = 3600
 enable_signup = true
-email_confirm = false
-phone_confirm = false
 
 [auth.external.google]
 enabled = false
@@ -39,7 +37,7 @@ redirect_uri = ""
 [db]
 port = 54322
 shadow_port = 54320
-major_version = 15
+major_version = 17
 
 [studio]
 enabled = true
@@ -58,7 +56,6 @@ file_size_limit = "50MiB"
 
 [edge_runtime]
 enabled = true
-port = 54329
 
 [analytics]
 enabled = false
