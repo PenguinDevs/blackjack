@@ -1,0 +1,5 @@
+{
+  "allowedHosts": "any",
+  "skip-dev": true,
+  "skip-prod": false
+}
