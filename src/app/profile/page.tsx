@@ -36,12 +36,12 @@ export default function ProfilePage() {
           <h1 className="text-4xl font-bold tracking-tight mb-2">Profile</h1>
           <p className="text-muted-foreground">View your game statistics and recent game history</p>
         </div>
-        
+
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-1">
             <ProfileStats />
           </div>
-          
+
           <div className="lg:col-span-2">
             <GameHistory />
           </div>

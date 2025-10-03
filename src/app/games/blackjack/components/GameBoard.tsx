@@ -176,10 +176,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
         <div className="w-full h-[600px] relative game-board">
           {/* Game Status - Fixed Position at Top Center */}
           <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-            <GameStatus
-              gameState={gameState.gameState}
-              message={gameState.gameResult?.reason}
-            />
+            <GameStatus gameState={gameState.gameState} message={gameState.gameResult?.reason} />
           </div>
 
           {/* Dealer Section - Fixed Position */}

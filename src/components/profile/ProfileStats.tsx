@@ -70,9 +70,10 @@ export function ProfileStats() {
     )
   }
 
-  const winRate = profileData.games_played > 0 
-    ? ((profileData.games_won / profileData.games_played) * 100).toFixed(1)
-    : '0.0'
+  const winRate =
+    profileData.games_played > 0
+      ? ((profileData.games_won / profileData.games_played) * 100).toFixed(1)
+      : '0.0'
 
   return (
     <Card>
@@ -91,7 +92,7 @@ export function ProfileStats() {
               <div className="text-sm text-muted-foreground">Credits</div>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2 p-3 bg-secondary/20 rounded-lg">
             <Target className="h-5 w-5 text-blue-500" />
             <div>
@@ -99,7 +100,7 @@ export function ProfileStats() {
               <div className="text-sm text-muted-foreground">Games Played</div>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2 p-3 bg-secondary/20 rounded-lg">
             <Trophy className="h-5 w-5 text-green-500" />
             <div>
@@ -107,7 +108,7 @@ export function ProfileStats() {
               <div className="text-sm text-muted-foreground">Games Won</div>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2 p-3 bg-secondary/20 rounded-lg">
             <TrendingUp className="h-5 w-5 text-purple-500" />
             <div>

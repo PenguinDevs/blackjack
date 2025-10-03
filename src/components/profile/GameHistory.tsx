@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { supabase } from '@/lib/supabase'
 import { formatDistanceToNow } from 'date-fns'
 import { History, TrendingDown, TrendingUp, Minus, RefreshCw } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 
 interface GameHistoryItem {
   id: string
@@ -26,19 +26,21 @@ export function GameHistory() {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
-  const fetchGameHistory = async (isRefresh = false) => {
-    if (isRefresh) {
-      setRefreshing(true)
-    } else {
-      setLoading(true)
-    }
+  const fetchGameHistory = useCallback(
+    async (isRefresh = false) => {
+      if (isRefresh) {
+        setRefreshing(true)
+      } else {
+        setLoading(true)
+      }
 
-    if (!user) return
+      if (!user) return
 
-    try {
-      const { data, error } = await supabase
-        .from('game_history')
-        .select(`
+      try {
+        const { data, error } = await supabase
+          .from('game_history')
+          .select(
+            `
           id,
           result,
           chips_won,
@@ -47,38 +49,42 @@ export function GameHistory() {
           games (
             name
           )
-        `)
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(20)
+        `
+          )
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(20)
 
-      if (error) throw error
-      
-      // Transform the data to match our interface
-      const transformedData = data?.map(item => ({
-        ...item,
-        game: {
-          name: Array.isArray(item.games) 
-            ? (item.games[0] as any)?.name || 'Blackjack'
-            : (item.games as any)?.name || 'Blackjack'
+        if (error) throw error
+
+        // Transform the data to match our interface
+        const transformedData =
+          data?.map((item) => ({
+            ...item,
+            game: {
+              name: Array.isArray(item.games)
+                ? (item.games[0] as { name: string })?.name || 'Blackjack'
+                : (item.games as { name: string })?.name || 'Blackjack',
+            },
+          })) || []
+
+        setGameHistory(transformedData)
+      } catch (error) {
+        console.error('Error fetching game history:', error)
+      } finally {
+        if (isRefresh) {
+          setRefreshing(false)
+        } else {
+          setLoading(false)
         }
-      })) || []
-      
-      setGameHistory(transformedData)
-    } catch (error) {
-      console.error('Error fetching game history:', error)
-    } finally {
-      if (isRefresh) {
-        setRefreshing(false)
-      } else {
-        setLoading(false)
       }
-    }
-  }
+    },
+    [user]
+  )
 
   useEffect(() => {
     fetchGameHistory()
-  }, [user])
+  }, [user, fetchGameHistory])
 
   const handleRefresh = () => {
     fetchGameHistory(true)
@@ -150,31 +156,36 @@ export function GameHistory() {
     switch (result) {
       case 'win':
         return (
-          <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+          <Badge
+            variant="secondary"
+            className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+          >
             <TrendingUp className="h-3 w-3 mr-1" />
             Win
           </Badge>
         )
       case 'lose':
         return (
-          <Badge variant="secondary" className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+          <Badge
+            variant="secondary"
+            className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+          >
             <TrendingDown className="h-3 w-3 mr-1" />
             Lose
           </Badge>
         )
       case 'push':
         return (
-          <Badge variant="secondary" className="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
+          <Badge
+            variant="secondary"
+            className="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+          >
             <Minus className="h-3 w-3 mr-1" />
             Push
           </Badge>
         )
       default:
-        return (
-          <Badge variant="secondary">
-            {result}
-          </Badge>
-        )
+        return <Badge variant="secondary">{result}</Badge>
     }
   }
 
@@ -208,7 +219,10 @@ export function GameHistory() {
           {gameHistory.map((game) => {
             const netChange = getNetChange(game)
             return (
-              <div key={game.id} className="flex items-center justify-between p-3 border rounded-lg">
+              <div
+                key={game.id}
+                className="flex items-center justify-between p-3 border rounded-lg"
+              >
                 <div className="flex items-center space-x-3">
                   {getResultBadge(game.result)}
                   <div>
@@ -218,16 +232,19 @@ export function GameHistory() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="text-right">
-                  <div className={`font-medium ${
-                    netChange > 0 
-                      ? 'text-green-600 dark:text-green-400' 
-                      : netChange < 0 
-                      ? 'text-red-600 dark:text-red-400'
-                      : 'text-muted-foreground'
-                  }`}>
-                    {netChange > 0 ? '+' : ''}{netChange.toLocaleString()}
+                  <div
+                    className={`font-medium ${
+                      netChange > 0
+                        ? 'text-green-600 dark:text-green-400'
+                        : netChange < 0
+                          ? 'text-red-600 dark:text-red-400'
+                          : 'text-muted-foreground'
+                    }`}
+                  >
+                    {netChange > 0 ? '+' : ''}
+                    {netChange.toLocaleString()}
                   </div>
                   <div className="text-sm text-muted-foreground">credits</div>
                 </div>

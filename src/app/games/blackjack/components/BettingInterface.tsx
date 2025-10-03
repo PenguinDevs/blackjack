@@ -66,7 +66,7 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
     if (isInteracting.current) {
       return
     }
-    
+
     if (bettingState.showBettingOptions) {
       onShowBettingOptions(false)
     }

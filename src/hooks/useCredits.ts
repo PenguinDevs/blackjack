@@ -109,7 +109,7 @@ export function useCredits() {
 
     try {
       setError(null)
-      
+
       // Optimistically update credits immediately for instant feedback
       const newCredits = credits + amount
       setCredits(newCredits)
@@ -138,10 +138,10 @@ export function useCredits() {
     if (!user || credits < amount) return false
 
     const originalCredits = credits
-    
+
     try {
       setError(null)
-      
+
       // Optimistically update credits immediately for instant feedback
       const newCredits = credits - amount
       setCredits(newCredits)

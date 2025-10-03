@@ -139,16 +139,16 @@ export const Hand: React.FC<HandProps> = ({
       const allComplete = Array.from(cardElements).every((element) => {
         const animationKey = element.getAttribute('data-animation-key')
         if (!animationKey) return true
-        
+
         // Cards with these animation keys should wait for animation completion
-        const shouldWaitForAnimation = 
+        const shouldWaitForAnimation =
           animationKey === 'player-card-0' ||
           animationKey === 'player-card-1' ||
           animationKey === 'dealer-card-0' ||
           animationKey === 'dealer-card-1' ||
           animationKey.startsWith('player-card-') ||
           animationKey.startsWith('dealer-card-')
-        
+
         if (!shouldWaitForAnimation) return true
         return element.classList.contains('animated')
       })
@@ -169,7 +169,7 @@ export const Hand: React.FC<HandProps> = ({
     cardElements?.forEach((element) => {
       observer.observe(element, {
         attributes: true,
-        attributeFilter: ['class']
+        attributeFilter: ['class'],
       })
     })
 
@@ -180,7 +180,9 @@ export const Hand: React.FC<HandProps> = ({
     <div ref={handRef} className={`text-center ${className}`}>
       <h3 className="text-xl font-bold text-foreground mb-2">{label}</h3>
       {value !== undefined && (
-        <div className={`text-lg font-semibold text-foreground mb-3 transition-opacity duration-300 ${showValue ? 'opacity-100' : 'opacity-0'}`}>
+        <div
+          className={`text-lg font-semibold text-foreground mb-3 transition-opacity duration-300 ${showValue ? 'opacity-100' : 'opacity-0'}`}
+        >
           Value: {showValue ? value : '•••'}
         </div>
       )}

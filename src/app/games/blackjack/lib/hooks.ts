@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 import { BlackjackGameState, BettingState } from '../types'
 import { BlackjackEngine } from '../lib/blackjack-engine'
 import { useCredits } from '@/hooks/useCredits'
-import { placeBet, recordGameResult } from './server-actions'
+import { recordGameResult } from './server-actions'
 
 interface UseBlackjackGameReturn {
   gameState: BlackjackGameState
@@ -18,8 +18,8 @@ interface UseBlackjackGameReturn {
 }
 
 export function useBlackjackGame(): UseBlackjackGameReturn {
-  const { credits, subtractCredits, addCredits, refreshCredits } = useCredits()
-  
+  const { credits, subtractCredits, addCredits } = useCredits()
+
   const [gameState, setGameState] = useState<BlackjackGameState>({
     gameState: 'waiting',
     playerHand: { cards: [], value: 0, isBusted: false, isBlackjack: false, isSoft: false },
@@ -38,50 +38,53 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const startNewGame = useCallback(async (betAmount: number) => {
-    try {
-      setError(null)
-      setIsLoading(true)
-      setBettingState((prev) => ({ ...prev, isPlacingBet: true }))
+  const startNewGame = useCallback(
+    async (betAmount: number) => {
+      try {
+        setError(null)
+        setIsLoading(true)
+        setBettingState((prev) => ({ ...prev, isPlacingBet: true }))
 
-      // Check if user has sufficient credits
-      if (credits < betAmount) {
-        throw new Error('Insufficient credits to place bet')
+        // Check if user has sufficient credits
+        if (credits < betAmount) {
+          throw new Error('Insufficient credits to place bet')
+        }
+
+        // Deduct credits for the bet (with optimistic update)
+        const success = await subtractCredits(betAmount)
+        if (!success) {
+          throw new Error('Failed to deduct credits for bet')
+        }
+
+        // Initialize game with bet
+        let newGameState = BlackjackEngine.initializeGame(betAmount)
+
+        // Deal initial cards
+        newGameState = BlackjackEngine.dealInitialCards(newGameState)
+
+        setGameState(newGameState)
+        setBettingState((prev) => ({
+          ...prev,
+          isPlacingBet: false,
+          showBettingOptions: false,
+        }))
+
+        // If player has blackjack, automatically play dealer turn
+        if (newGameState.playerHand.isBlackjack) {
+          setTimeout(async () => {
+            await playDealerTurn(newGameState)
+          }, 1000)
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to start game')
+        setBettingState((prev) => ({ ...prev, isPlacingBet: false }))
+      } finally {
+        setIsLoading(false)
       }
-
-      // Deduct credits for the bet (with optimistic update)
-      const success = await subtractCredits(betAmount)
-      if (!success) {
-        throw new Error('Failed to deduct credits for bet')
-      }
-
-      // Initialize game with bet
-      let newGameState = BlackjackEngine.initializeGame(betAmount)
-
-      // Deal initial cards
-      newGameState = BlackjackEngine.dealInitialCards(newGameState)
-
-      setGameState(newGameState)
-      setBettingState((prev) => ({
-        ...prev,
-        isPlacingBet: false,
-        showBettingOptions: false,
-      }))
-
-      // If player has blackjack, automatically play dealer turn
-      if (newGameState.playerHand.isBlackjack) {
-        setTimeout(async () => {
-          await playDealerTurn(newGameState)
-        }, 1000)
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to start game')
-      setBettingState((prev) => ({ ...prev, isPlacingBet: false }))
-    } finally {
-      setIsLoading(false)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [credits, subtractCredits])
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    [credits, subtractCredits]
+  )
 
   const playerHit = useCallback(async () => {
     try {
@@ -100,7 +103,7 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
         if (newGameState.gameResult) {
           const { winnings, playerWins, isDraw } = newGameState.gameResult
           const gameResult = playerWins ? 'win' : isDraw ? 'push' : 'lose'
-          
+
           try {
             // Award winnings immediately with optimistic update
             if (winnings > 0) {
@@ -110,7 +113,7 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
                 return
               }
             }
-            
+
             // Record game result for statistics (non-blocking)
             recordGameResult(newGameState.currentBet, winnings, gameResult).catch((error) => {
               console.warn('Failed to record game statistics:', error)
@@ -147,49 +150,52 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState])
 
-  const playDealerTurn = useCallback(async (currentGameState: BlackjackGameState) => {
-    try {
-      // Simulate dealer thinking time
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+  const playDealerTurn = useCallback(
+    async (currentGameState: BlackjackGameState) => {
+      try {
+        // Simulate dealer thinking time
+        await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      let newGameState = BlackjackEngine.playDealerTurn(currentGameState)
-      setGameState(newGameState)
+        let newGameState = BlackjackEngine.playDealerTurn(currentGameState)
+        setGameState(newGameState)
 
-      // Complete game and show result
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      newGameState = BlackjackEngine.completeGame(newGameState)
-      setGameState(newGameState)
+        // Complete game and show result
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        newGameState = BlackjackEngine.completeGame(newGameState)
+        setGameState(newGameState)
 
-      // Handle game result and credits
-      if (newGameState.gameResult) {
-        const { winnings, playerWins, isDraw } = newGameState.gameResult
-        const gameResult = playerWins ? 'win' : isDraw ? 'push' : 'lose'
-        
-        try {
-          // Award winnings immediately with optimistic update
-          if (winnings > 0) {
-            const success = await addCredits(winnings)
-            if (!success) {
-              setError('Failed to award winnings')
-              return
+        // Handle game result and credits
+        if (newGameState.gameResult) {
+          const { winnings, playerWins, isDraw } = newGameState.gameResult
+          const gameResult = playerWins ? 'win' : isDraw ? 'push' : 'lose'
+
+          try {
+            // Award winnings immediately with optimistic update
+            if (winnings > 0) {
+              const success = await addCredits(winnings)
+              if (!success) {
+                setError('Failed to award winnings')
+                return
+              }
             }
+
+            // Record game result for statistics (non-blocking)
+            recordGameResult(newGameState.currentBet, winnings, gameResult).catch((error) => {
+              console.warn('Failed to record game statistics:', error)
+            })
+          } catch (error) {
+            console.error('Error processing game result:', error)
+            setError('Failed to process game result')
           }
-          
-          // Record game result for statistics (non-blocking)
-          recordGameResult(newGameState.currentBet, winnings, gameResult).catch((error) => {
-            console.warn('Failed to record game statistics:', error)
-          })
-        } catch (error) {
-          console.error('Error processing game result:', error)
-          setError('Failed to process game result')
         }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to complete dealer turn')
+      } finally {
+        setIsLoading(false)
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to complete dealer turn')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [addCredits])
+    },
+    [addCredits]
+  )
 
   const resetGame = useCallback(() => {
     setGameState({

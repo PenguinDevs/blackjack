@@ -2,7 +2,6 @@
 
 import { BlackjackEngine } from './blackjack-engine'
 import { BlackjackGameState, PlayerAction } from '../types'
-import { createClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 
@@ -195,7 +194,10 @@ export async function placeBet(betAmount: number): Promise<{
     )
 
     // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
     if (authError || !user) {
       return { success: false, message: 'Authentication required' }
     }
@@ -225,9 +227,9 @@ export async function placeBet(betAmount: number): Promise<{
     const newCredits = profile.credits - betAmount
     const { error: updateError } = await supabase
       .from('profiles')
-      .update({ 
+      .update({
         credits: newCredits,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', user.id)
 
@@ -235,10 +237,10 @@ export async function placeBet(betAmount: number): Promise<{
       return { success: false, message: 'Failed to deduct credits' }
     }
 
-    return { 
-      success: true, 
+    return {
+      success: true,
       message: 'Bet placed successfully',
-      remainingCredits: newCredits
+      remainingCredits: newCredits,
     }
   } catch (error) {
     console.error('Error placing bet:', error)
@@ -250,8 +252,8 @@ export async function placeBet(betAmount: number): Promise<{
  * Server action to record game result and handle credits
  */
 export async function recordGameResult(
-  betAmount: number, 
-  winnings: number, 
+  betAmount: number,
+  winnings: number,
   gameResult: 'win' | 'lose' | 'push'
 ): Promise<{
   success: boolean
@@ -273,7 +275,10 @@ export async function recordGameResult(
     )
 
     // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
     if (authError || !user) {
       return { success: false, message: 'Authentication required' }
     }
@@ -302,21 +307,21 @@ export async function recordGameResult(
       p_game_result: gameResult,
       p_new_credits: newCredits,
       p_new_games_played: newGamesPlayed,
-      p_new_games_won: newGamesWon
+      p_new_games_won: newGamesWon,
     })
 
     if (transactionError) {
       // Fallback to manual updates if the stored procedure doesn't exist
       console.warn('Stored procedure not found, using manual transaction')
-      
+
       // Update profile
       const { error: updateError } = await supabase
         .from('profiles')
-        .update({ 
+        .update({
           credits: newCredits,
           games_played: newGamesPlayed,
           games_won: newGamesWon,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', user.id)
 
@@ -325,10 +330,10 @@ export async function recordGameResult(
       }
     }
 
-    return { 
-      success: true, 
+    return {
+      success: true,
       message: 'Game result recorded successfully',
-      newCredits
+      newCredits,
     }
   } catch (error) {
     console.error('Error recording game result:', error)
@@ -359,7 +364,10 @@ export async function awardWinnings(winnings: number): Promise<{
     )
 
     // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
     if (authError || !user) {
       return { success: false, message: 'Authentication required' }
     }
@@ -389,9 +397,9 @@ export async function awardWinnings(winnings: number): Promise<{
     const newCredits = profile.credits + winnings
     const { error: updateError } = await supabase
       .from('profiles')
-      .update({ 
+      .update({
         credits: newCredits,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', user.id)
 
@@ -399,10 +407,10 @@ export async function awardWinnings(winnings: number): Promise<{
       return { success: false, message: 'Failed to award winnings' }
     }
 
-    return { 
-      success: true, 
+    return {
+      success: true,
       message: 'Winnings awarded successfully',
-      newCredits
+      newCredits,
     }
   } catch (error) {
     console.error('Error awarding winnings:', error)
