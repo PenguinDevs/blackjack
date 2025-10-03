@@ -85,13 +85,11 @@ export class BlackjackEngine {
    */
   static calculateHandValue(cards: Card[]): {
     value: number
-    isSoft: boolean
     isBusted: boolean
     isBlackjack: boolean
   } {
     let value = 0
     let aces = 0
-    let isSoft = false
 
     // Count non-ace cards first
     for (const card of cards) {
@@ -108,7 +106,6 @@ export class BlackjackEngine {
     for (let i = 0; i < aces; i++) {
       if (value + 11 <= 21) {
         value += 11
-        isSoft = true
       } else {
         value += 1
       }
@@ -117,19 +114,18 @@ export class BlackjackEngine {
     const isBusted = value > 21
     const isBlackjack = cards.length === 2 && value === 21 && !cards.some((c) => c.isHidden)
 
-    return { value, isSoft, isBusted, isBlackjack }
+    return { value, isBusted, isBlackjack }
   }
 
   /**
    * Creates a new hand from cards
    */
   static createHand(cards: Card[]): Hand {
-    const { value, isSoft, isBusted, isBlackjack } = this.calculateHandValue(cards)
+    const { value, isBusted, isBlackjack } = this.calculateHandValue(cards)
 
     return {
       cards,
       value,
-      isSoft,
       isBusted,
       isBlackjack,
     }
@@ -261,8 +257,8 @@ export class BlackjackEngine {
     const revealedCards = dealerHand.cards.map((card) => ({ ...card, isHidden: false }))
     dealerHand = this.createHand(revealedCards)
 
-    // Dealer hits on 16 or soft 17
-    while (dealerHand.value < 17 || (dealerHand.value === 17 && dealerHand.isSoft)) {
+    // Dealer hits on 16 or less, stands on 17 or more (including soft 17)
+    while (dealerHand.value < 17) {
       const { card, remainingDeck } = this.dealCard(deck)
       dealerHand = this.createHand([...dealerHand.cards, card])
       deck = remainingDeck

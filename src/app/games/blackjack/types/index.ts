@@ -13,7 +13,6 @@ export interface Hand {
   value: number
   isBusted: boolean
   isBlackjack: boolean
-  isSoft: boolean // Contains Ace counted as 11
 }
 
 export type GameState =

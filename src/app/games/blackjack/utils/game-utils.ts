@@ -198,33 +198,6 @@ export class GameUtils {
     if (value >= 12) return 'Decent Hand'
     return 'Weak Hand'
   }
-
-  /**
-   * Calculate optimal strategy hint (basic strategy)
-   */
-  static getBasicStrategyHint(
-    playerValue: number,
-    dealerUpCard: number,
-    playerHasSoftAce: boolean
-  ): string {
-    // Simplified basic strategy hints
-    if (playerValue < 12) return 'Hit'
-    if (playerValue > 16) return 'Stand'
-
-    if (playerHasSoftAce) {
-      if (playerValue <= 17) return 'Hit'
-      return 'Stand'
-    }
-
-    // Hard totals
-    if (playerValue <= 11) return 'Hit'
-    if (playerValue === 12 && [2, 3, 7, 8, 9, 10, 11].includes(dealerUpCard)) return 'Hit'
-    if (playerValue === 12) return 'Stand'
-    if (playerValue <= 16 && dealerUpCard >= 7) return 'Hit'
-    if (playerValue <= 16 && dealerUpCard <= 6) return 'Stand'
-
-    return 'Stand'
-  }
 }
 
 /**
