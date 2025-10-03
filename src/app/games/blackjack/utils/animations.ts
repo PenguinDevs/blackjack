@@ -77,13 +77,14 @@ export class GameAnimations {
     const midY = from.y - arcHeight
     
     return new Promise((resolve) => {
+      // Remove pre-deal class so animation can control visibility
+      cardElement.classList.remove('pre-deal')
+      
       // Set initial animation styles
       cardElement.style.position = 'relative'
-      cardElement.style.zIndex = '1000'      // Set initial state - card starts invisible from deck position
+      cardElement.style.zIndex = '1000'
       cardElement.style.transform = `translate(${from.x}px, ${from.y}px) scale(0.7)`
       cardElement.style.opacity = '0'
-      cardElement.style.zIndex = '1000'
-      cardElement.style.position = 'relative'
       
       // Single smooth animation with all phases
       const flyAnimation = cardElement.animate([
@@ -156,6 +157,9 @@ export class GameAnimations {
     const { from, to, delay = 0 } = config
     
     return new Promise((resolve) => {
+      // Remove pre-deal class so animation can control visibility
+      cardElement.classList.remove('pre-deal')
+      
       // Set initial position
       cardElement.style.transform = `translate(${from.x}px, ${from.y}px) rotate(${from.rotation || 0}deg) scale(0.8)`
       cardElement.style.opacity = '0'

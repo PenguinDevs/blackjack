@@ -128,7 +128,7 @@ export const useCardAnimations = () => {
       { key: 'dealer-card-1', isDealer: true },
     ]
 
-    // First, find and hide all cards that should be animated
+    // First, find all cards that should be animated (they're already hidden with pre-deal class)
     const cardElements: HTMLElement[] = []
     for (const { key } of sequence) {
       let cardElement = null
@@ -148,11 +148,10 @@ export const useCardAnimations = () => {
 
       if (cardElement) {
         cardElements.push(cardElement)
-        // Hide the card initially using CSS class
-        cardElement.classList.add('pre-deal')
-        console.log(`Hidden card: ${key}`)
+        // Cards should already have pre-deal class applied from initial render
+        console.log(`Found card for animation: ${key}`)
       } else {
-        console.warn(`Card element not found for hiding: ${key}`)
+        console.warn(`Card element not found for animation: ${key}`)
       }
     }
 

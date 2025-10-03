@@ -14,6 +14,17 @@ export const Card: React.FC<CardProps> = ({
   onClick, 
   animationKey
 }) => {
+  // Determine if this card should start hidden for animation
+  const shouldStartHidden = React.useMemo(() => {
+    // Only hide cards that are part of the initial deal (first 2 cards for each player)
+    return animationKey && (
+      animationKey === 'player-card-0' || 
+      animationKey === 'player-card-1' ||
+      animationKey === 'dealer-card-0' ||
+      animationKey === 'dealer-card-1'
+    )
+  }, [animationKey])
+
   const getSuitSymbol = (suit: CardType['suit']): string => {
     switch (suit) {
       case 'hearts':
@@ -40,7 +51,7 @@ export const Card: React.FC<CardProps> = ({
   if (card.isHidden) {
     return (
       <div
-        className={`w-16 h-24 bg-blue-600 border-2 border-blue-700 rounded-lg flex items-center justify-center cursor-pointer transition-transform hover:scale-105 ${className}`}
+        className={`w-16 h-24 bg-blue-600 border-2 border-blue-700 rounded-lg flex items-center justify-center cursor-pointer transition-transform hover:scale-105 ${shouldStartHidden ? 'pre-deal' : ''} ${className}`}
         onClick={onClick}
         data-animation-key={animationKey}
         data-card-hidden="true"
@@ -67,7 +78,7 @@ export const Card: React.FC<CardProps> = ({
 
   return (
     <div
-      className={`w-16 h-24 bg-white border-2 border-gray-300 rounded-lg flex flex-col items-center justify-between p-1 cursor-pointer transition-transform hover:scale-105 shadow-md ${className}`}
+      className={`w-16 h-24 bg-white border-2 border-gray-300 rounded-lg flex flex-col items-center justify-between p-1 cursor-pointer transition-transform hover:scale-105 shadow-md ${shouldStartHidden ? 'pre-deal' : ''} ${className}`}
       onClick={onClick}
       data-animation-key={animationKey}
       style={{ position: 'relative' }}
