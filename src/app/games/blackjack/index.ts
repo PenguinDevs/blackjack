@@ -8,6 +8,9 @@ export { GameBoard } from './components/GameBoard'
 export { BlackjackEngine } from './lib/blackjack-engine'
 export { useBlackjackGame, useBettingState } from './lib/hooks'
 
+// Animation Hooks
+export { useCardAnimations } from './hooks/useCardAnimations'
+
 // Types
 export type * from './types'
 

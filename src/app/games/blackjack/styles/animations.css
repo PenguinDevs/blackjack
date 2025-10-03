@@ -1,0 +1,71 @@
+/* Card animation styles */
+.card-animation {
+  position: relative;
+  transition: transform 0.1s ease-out;
+}
+
+/* Game board should be positioned for absolute card positioning */
+.game-board {
+  position: relative;
+  overflow: visible; /* Allow animations to extend beyond bounds */
+}
+
+/* Ensure cards can be positioned for animations */
+[data-animation-key] {
+  position: relative;
+  z-index: 1;
+  /* Prevent layout shifts during animations */
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  /* Cards are visible by default */
+  opacity: 1;
+  transform: none;
+  transition: none; /* Disable transitions during setup */
+}
+
+/* Cards that need initial animation start hidden */
+[data-animation-key].pre-deal {
+  opacity: 0;
+  transform: translate(0px, -300px) scale(0.7);
+}
+
+/* Cards become visible after they're animated */
+[data-animation-key].animated {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Higher z-index during animations */
+[data-animation-key].animating {
+  z-index: 1000;
+}
+
+/* Smooth any layout transitions */
+[data-hand-type] {
+  position: relative;
+  /* Allow for smooth card additions */
+  transition: all 0.2s ease-out;
+}
+
+/* Smooth hover effects */
+.card-hover {
+  transition: transform 0.2s ease-out;
+}
+
+.card-hover:hover {
+  transform: scale(1.05);
+}
+
+/* Hand containers should allow for card positioning */
+[data-hand-type] {
+  position: relative;
+}
+
+/* Ensure proper stacking context */
+.betting-interface {
+  z-index: 100;
+}
+
+.game-result-overlay {
+  z-index: 200;
+}

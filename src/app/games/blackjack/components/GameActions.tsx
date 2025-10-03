@@ -118,9 +118,6 @@ export const GameStatus: React.FC<GameStatusProps> = ({ gameState, currentBet, m
   return (
     <div className="text-center">
       <p className={`text-sm font-medium ${getStatusColor()}`}>{getStatusMessage()}</p>
-      {currentBet && gameState !== 'waiting' && (
-        <p className="text-xs text-gray-300 mt-1">Current bet: {currentBet} credits</p>
-      )}
     </div>
   )
 }
