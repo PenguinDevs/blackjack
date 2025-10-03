@@ -4,7 +4,6 @@ import React, { useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { BettingState } from '../types'
-import { GameAnimations } from '../utils/animations'
 
 interface BettingInterfaceProps {
   bettingState: BettingState
@@ -24,19 +23,13 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
   const bettingModalRef = useRef<HTMLDivElement>(null)
   const currentBetRef = useRef<HTMLDivElement>(null)
   const bettingButtonsRef = useRef<HTMLDivElement>(null)
+  const isInteracting = useRef(false)
 
   useEffect(() => {
-    if (
-      bettingState.showBettingOptions &&
-      bettingModalRef.current &&
-      currentBetRef.current &&
-      bettingButtonsRef.current
-    ) {
-      GameAnimations.animateBettingModal(
-        bettingModalRef.current,
-        currentBetRef.current,
-        bettingButtonsRef.current
-      )
+    if (bettingState.showBettingOptions && bettingModalRef.current) {
+      // Simple CSS transition - no DOM conflicts with React
+      bettingModalRef.current.style.opacity = '1'
+      bettingModalRef.current.style.transform = 'translate(-50%, -50%) scale(1)'
     }
   }, [bettingState.showBettingOptions])
 
@@ -69,11 +62,28 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
   }
 
   const handleMouseLeave = () => {
-    if (bettingState.showBettingOptions && bettingModalRef.current) {
-      GameAnimations.animateBettingModalCollapse(bettingModalRef.current).then(() =>
-        onShowBettingOptions(false)
-      )
+    // Don't hide if user is currently interacting with modal elements
+    if (isInteracting.current) {
+      return
     }
+    
+    if (bettingState.showBettingOptions) {
+      onShowBettingOptions(false)
+    }
+  }
+
+  const handleModalMouseEnter = () => {
+    isInteracting.current = true
+  }
+
+  const handleModalMouseLeave = () => {
+    isInteracting.current = false
+    // Small delay to prevent flicker when mouse briefly leaves modal
+    setTimeout(() => {
+      if (!isInteracting.current && bettingState.showBettingOptions) {
+        handleMouseLeave()
+      }
+    }, 100)
   }
 
   return (
@@ -94,13 +104,16 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
           <div
             ref={bettingModalRef}
             className="absolute top-1/2 left-1/2 bg-black/90 backdrop-blur-sm rounded-lg border border-gray-600 shadow-2xl p-6 pt-12 flex flex-col justify-start items-center z-30"
+            onMouseEnter={handleModalMouseEnter}
+            onMouseLeave={handleModalMouseLeave}
             style={{
               opacity: 0,
-              transform: 'translate(-50%, -50%) scaleX(0.1) scaleY(0.1)',
+              transform: 'translate(-50%, -50%) scale(0.1)',
               transformOrigin: '50% 50%',
               top: '-90px',
               width: '400px',
               height: '400px',
+              transition: 'opacity 0.3s ease, transform 0.3s ease',
             }}
           >
             {/* Modal Header */}
