@@ -1,33 +1,23 @@
-# 🃏 Blackjack Game
+# Blackjack
 
-A modern, multiplayer Blackjack game built with Next.js, Supabase, and TypeScript. Play against other players or challenge AI bots in real-time!
+A Next.js Blackjack game.
 
-## ✨ Features
+Built as part of a submission for the Monash Association of Coding take home task.
 
-- 🔐 **Secure Authentication** - Email/password and OAuth (Google, Discord, GitHub)
-- 👥 **Multiplayer Games** - Play against other players in real-time
-- 🤖 **AI Opponents** - Challenge intelligent bots with different difficulty levels
-- 📊 **Progress Tracking** - Monitor wins, losses, and improve your strategy
-- 🎮 **Responsive Design** - Play on desktop, tablet, or mobile
-- ⚡ **Real-time Updates** - Live game state synchronization
-- 🔄 **Automatic Backups** - Database migrations and rollbacks
+## Tech Stack
 
-## 🛠️ Tech Stack
-
-- **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS
-- **Backend**: Supabase (PostgreSQL, Auth, Real-time)
-- **Deployment**: Vercel
-- **Testing**: Vitest, Playwright, Testing Library
+- **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS, Anime.js
+- **Backend**: Supabase (PostgreSQL, Auth)
+- **Testing**: Vitest, Playwright
 - **CI/CD**: GitHub Actions
 - **Code Quality**: ESLint, Prettier, Husky
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
 - Node.js 18+ and npm
-- Supabase account
-- Vercel account (for deployment)
+- Supabase (locally hosted or https://supabase.com)
 
 ### Local Development Setup
 
@@ -68,7 +58,7 @@ A modern, multiplayer Blackjack game built with Next.js, Supabase, and TypeScrip
    npm run dev
    ```
 
-Visit [http://localhost:3000](http://localhost:3000) to see the app!
+Visit [http://localhost:3000](http://localhost:3000) to see the app.
 
 ## 🔐 Authentication Setup
 
@@ -91,7 +81,7 @@ Configure OAuth providers in your Supabase dashboard:
 1. GitHub Settings → Developer settings → OAuth Apps
 2. Redirect URI: `https://[project].supabase.co/auth/v1/callback`
 
-## 🧪 Testing
+## Testing
 
 ```bash
 npm test              # Unit tests
@@ -101,7 +91,7 @@ npm run lint          # Code quality checks
 npm run type-check    # TypeScript validation
 ```
 
-## 📦 Deployment
+## Deployment
 
 ### Vercel Deployment
 
@@ -127,32 +117,8 @@ Comprehensive CI/CD pipeline includes:
 - Automatic deployments (Preview, Staging, Production)
 - Database migrations and type generation
 
-## 🎮 How to Play
-
-**Objective:** Get as close to 21 as possible without going over!
-
-**Card Values:**
-
-- Number cards: Face value
-- Face cards (J, Q, K): 10 points
-- Aces: 1 or 11 points
-
-**Game Flow:**
-
-1. Receive 2 initial cards
-2. Choose to Hit (take card) or Stand (keep hand)
-3. Dealer plays after all players
-4. Closest to 21 without busting wins!
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch: `git checkout -b feature/amazing-feature`
-3. Follow [Conventional Commits](https://conventionalcommits.org)
-4. Submit Pull Request
+## Contributing
 
 **Commit Types:** `feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`
 
 ---
-
-Built with ❤️ using [Next.js](https://nextjs.org), [Supabase](https://supabase.com), and [Vercel](https://vercel.com)
