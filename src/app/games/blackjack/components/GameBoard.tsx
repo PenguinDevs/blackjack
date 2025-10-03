@@ -178,7 +178,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({
           <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
             <GameStatus
               gameState={gameState.gameState}
-              currentBet={gameState.currentBet}
               message={gameState.gameResult?.reason}
             />
           </div>
@@ -197,6 +196,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                     : gameState.dealerHand.value
               }
               isDealer={true}
+              gameState={gameState.gameState}
             />
           </div>
 
@@ -221,6 +221,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
               value={gameState.playerHand.cards.length > 0 ? gameState.playerHand.value : undefined}
               className="mb-10"
               isDealer={false}
+              gameState={gameState.gameState}
             />
 
             {/* Game Action Buttons */}

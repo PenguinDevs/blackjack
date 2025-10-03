@@ -100,6 +100,7 @@ interface HandProps {
   className?: string
   onCardClick?: (cardIndex: number) => void
   isDealer?: boolean
+  gameState?: string // Add game state to know when to show values immediately
 }
 
 export const Hand: React.FC<HandProps> = ({
@@ -109,12 +110,79 @@ export const Hand: React.FC<HandProps> = ({
   className = '',
   onCardClick,
   isDealer = false,
+  gameState,
 }) => {
+  const [showValue, setShowValue] = React.useState(false)
+  const handRef = React.useRef<HTMLDivElement>(null)
+
+  // Check if all card animations are complete
+  React.useEffect(() => {
+    // Always show values when game is over or dealer turn (for final reveal)
+    if (gameState === 'game-over' || gameState === 'dealer-turn') {
+      setShowValue(true)
+      return
+    }
+
+    if (!handRef.current || cards.length === 0) {
+      setShowValue(true)
+      return
+    }
+
+    const checkAllAnimationsComplete = () => {
+      const cardElements = handRef.current?.querySelectorAll('[data-animation-key]')
+      if (!cardElements || cardElements.length === 0) {
+        setShowValue(true)
+        return
+      }
+
+      // Check if all cards either don't have animation keys or have completed animations
+      const allComplete = Array.from(cardElements).every((element) => {
+        const animationKey = element.getAttribute('data-animation-key')
+        if (!animationKey) return true
+        
+        // Cards with these animation keys should wait for animation completion
+        const shouldWaitForAnimation = 
+          animationKey === 'player-card-0' ||
+          animationKey === 'player-card-1' ||
+          animationKey === 'dealer-card-0' ||
+          animationKey === 'dealer-card-1' ||
+          animationKey.startsWith('player-card-') ||
+          animationKey.startsWith('dealer-card-')
+        
+        if (!shouldWaitForAnimation) return true
+        return element.classList.contains('animated')
+      })
+
+      setShowValue(allComplete)
+    }
+
+    // Initial check
+    checkAllAnimationsComplete()
+
+    // Set up mutation observer to watch for animation completion
+    const observer = new MutationObserver(() => {
+      checkAllAnimationsComplete()
+    })
+
+    // Observe all card elements for class changes
+    const cardElements = handRef.current?.querySelectorAll('[data-animation-key]')
+    cardElements?.forEach((element) => {
+      observer.observe(element, {
+        attributes: true,
+        attributeFilter: ['class']
+      })
+    })
+
+    return () => observer.disconnect()
+  }, [cards.length, gameState])
+
   return (
-    <div className={`text-center ${className}`}>
+    <div ref={handRef} className={`text-center ${className}`}>
       <h3 className="text-xl font-bold text-white mb-2">{label}</h3>
       {value !== undefined && (
-        <div className="text-lg font-semibold text-white mb-3">Value: {value}</div>
+        <div className={`text-lg font-semibold text-white mb-3 transition-opacity duration-300 ${showValue ? 'opacity-100' : 'opacity-0'}`}>
+          Value: {showValue ? value : '•••'}
+        </div>
       )}
       <div
         className="flex justify-center space-x-2"
