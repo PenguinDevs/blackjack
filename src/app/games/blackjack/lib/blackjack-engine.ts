@@ -274,6 +274,41 @@ export class BlackjackEngine {
   }
 
   /**
+   * Dealer hits one card (for step-by-step animation)
+   */
+  static dealerHit(gameState: BlackjackGameState): BlackjackGameState {
+    if (gameState.gameState !== 'dealer-turn') {
+      throw new Error("Not dealer's turn")
+    }
+
+    const { dealerHand, deck } = gameState
+    
+    if (dealerHand.value >= 17) {
+      // Dealer should stand, transition to game-over
+      return {
+        ...gameState,
+        gameState: 'game-over',
+      }
+    }
+
+    const { card, remainingDeck } = this.dealCard(deck)
+    const newDealerHand = this.createHand([...dealerHand.cards, card])
+
+    return {
+      ...gameState,
+      dealerHand: newDealerHand,
+      deck: remainingDeck,
+    }
+  }
+
+  /**
+   * Checks if dealer should continue hitting
+   */
+  static shouldDealerHit(gameState: BlackjackGameState): boolean {
+    return gameState.dealerHand.value < 17 && !gameState.dealerHand.isBusted
+  }
+
+  /**
    * Determines game result and winnings
    */
   static determineGameResult(gameState: BlackjackGameState): GameResult {

@@ -42,13 +42,37 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
   const playDealerTurn = useCallback(
     async (currentGameState: BlackjackGameState) => {
       try {
-        // Simulate dealer thinking time
+        // Step 1: First reveal the dealer's hidden card (flip animation will be handled by GameBoard)
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        
+        // Reveal dealer's hidden card
+        const revealedCards = currentGameState.dealerHand.cards.map(card => ({ ...card, isHidden: false }))
+        let newGameState = {
+          ...currentGameState,
+          dealerHand: BlackjackEngine.createHand(revealedCards)
+        }
+        setGameState(newGameState)
+        
+        // Wait for card flip animation to complete
         await new Promise((resolve) => setTimeout(resolve, 1000))
 
-        let newGameState = BlackjackEngine.playDealerTurn(currentGameState)
+        // Step 2: Dealer hits cards one by one if needed
+        while (BlackjackEngine.shouldDealerHit(newGameState)) {
+          // Simulate dealer thinking time between cards
+          await new Promise((resolve) => setTimeout(resolve, 800))
+          
+          newGameState = BlackjackEngine.dealerHit(newGameState)
+          setGameState(newGameState)
+          
+          // Wait for card animation
+          await new Promise((resolve) => setTimeout(resolve, 800))
+        }
+
+        // Step 3: Transition to game over state
+        newGameState = { ...newGameState, gameState: 'game-over' as const }
         setGameState(newGameState)
 
-        // Complete game and show result
+        // Step 4: Complete game and show result
         await new Promise((resolve) => setTimeout(resolve, 500))
         newGameState = BlackjackEngine.completeGame(newGameState)
         setGameState(newGameState)
