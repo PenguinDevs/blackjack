@@ -59,21 +59,6 @@ export function CreditsModal({ open, onOpenChange }: CreditsModalProps) {
           </DialogDescription>
         </DialogHeader>
 
-        {/* Current Credits Display */}
-        <div className="flex items-center justify-center p-4 bg-muted rounded-lg">
-          <div className="flex items-center space-x-2">
-            <Coins className="h-6 w-6 text-yellow-500" />
-            <span className="text-lg font-semibold">
-              Current Credits:{' '}
-              {creditsLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin inline ml-1" />
-              ) : (
-                credits.toLocaleString()
-              )}
-            </span>
-          </div>
-        </div>
-
         {/* Success/Error Messages */}
         {successMessage && (
           <div className="flex items-center space-x-2 p-3 bg-green-50 border border-green-200 rounded-lg text-green-800">
