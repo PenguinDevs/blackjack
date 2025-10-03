@@ -54,7 +54,9 @@
     transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 20px rgba(251, 191, 36, 0.8), 0 0 30px rgba(251, 191, 36, 0.6);
+    box-shadow:
+      0 0 20px rgba(251, 191, 36, 0.8),
+      0 0 30px rgba(251, 191, 36, 0.6);
     transform: scale(1.05);
   }
   100% {
@@ -64,7 +66,8 @@
 }
 
 @keyframes golden-pulse {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {
@@ -88,7 +91,9 @@
   animation: golden-glow 2s ease-in-out infinite;
   background: linear-gradient(-45deg, #fbbf24, #f59e0b, #d97706, #fbbf24) !important;
   background-size: 400% 400% !important;
-  animation: golden-glow 2s ease-in-out infinite, golden-pulse 3s ease-in-out infinite !important;
+  animation:
+    golden-glow 2s ease-in-out infinite,
+    golden-pulse 3s ease-in-out infinite !important;
   border: 2px solid #f59e0b !important;
   color: #000 !important;
   font-weight: bold !important;

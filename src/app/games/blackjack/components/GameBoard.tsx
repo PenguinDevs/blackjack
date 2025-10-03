@@ -39,14 +39,17 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   const cardAnimations = useCardAnimations()
 
   // Handle AI recommendation requests
-  const handleAIRecommendation = React.useCallback(async (gameState: BlackjackGameState): Promise<AIRecommendation> => {
-    try {
-      return await getAIRecommendation(gameState)
-    } catch (error) {
-      console.error('Failed to get AI recommendation:', error)
-      throw error
-    }
-  }, [])
+  const handleAIRecommendation = React.useCallback(
+    async (gameState: BlackjackGameState): Promise<AIRecommendation> => {
+      try {
+        return await getAIRecommendation(gameState)
+      } catch (error) {
+        console.error('Failed to get AI recommendation:', error)
+        throw error
+      }
+    },
+    []
+  )
 
   const handleCardAnimations = React.useCallback(
     async (prevState: BlackjackGameState, currentState: BlackjackGameState) => {
@@ -187,8 +190,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({
         <div className="w-full h-[600px] relative game-board z-10">
           {/* Game Status - Fixed Position at Top Center */}
           <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-            <GameStatus 
-              gameState={gameState.gameState} 
+            <GameStatus
+              gameState={gameState.gameState}
               message={gameState.gameResult?.reason}
               currentBet={gameState.gameState !== 'waiting' ? gameState.currentBet : undefined}
             />

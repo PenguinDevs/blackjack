@@ -10,7 +10,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { useCredits } from '@/hooks/useCredits'
-import { Coins, Loader2, CheckCircle, AlertCircle } from 'lucide-react'
+import { Loader2, CheckCircle, AlertCircle } from 'lucide-react'
 
 interface CreditsModalProps {
   open: boolean

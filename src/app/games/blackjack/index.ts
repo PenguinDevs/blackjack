@@ -28,10 +28,7 @@ export {
 export { recordGameResult } from './lib/server-actions'
 
 // AI Services
-export {
-  getAIRecommendation,
-  type AIRecommendation,
-} from './lib/gemini-ai-service'
+export { getAIRecommendation, type AIRecommendation } from './lib/gemini-ai-service'
 
 // Hooks
 export { useAIRecommendation } from './hooks/useAIRecommendation'

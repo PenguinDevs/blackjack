@@ -57,7 +57,7 @@ export const GameActions: React.FC<GameActionsProps> = ({
     // Clear AI recommendation immediately when player takes any action
     setAiRecommendation(null)
     setShowRecommendation(false)
-    
+
     // Call the original onPlayerAction handler
     onPlayerAction(action)
   }
@@ -89,12 +89,12 @@ export const GameActions: React.FC<GameActionsProps> = ({
   }
 
   const getButtonClassName = (action: PlayerAction): string => {
-    const baseClass = "font-semibold px-6 py-2 transition-all duration-500"
-    
+    const baseClass = 'font-semibold px-6 py-2 transition-all duration-500'
+
     if (isRecommendedAction(action)) {
       return `${baseClass} bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black border-2 border-yellow-300 shadow-lg shadow-yellow-400/50 animate-pulse scale-105 hover:scale-110`
     }
-    
+
     return baseClass
   }
 
@@ -122,7 +122,7 @@ export const GameActions: React.FC<GameActionsProps> = ({
           </Button>
         ))}
       </div>
-      
+
       {/* Ask AI Button - Now below Hit/Stand buttons */}
       {fullGameState && onAskAI && (
         <Button
@@ -144,18 +144,22 @@ export const GameActions: React.FC<GameActionsProps> = ({
           )}
         </Button>
       )}
-      
+
       {/* AI Recommendation Display - Below buttons, no absolute positioning needed */}
       {aiRecommendation && showRecommendation && (
-        <div className={`bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-lg shadow-lg transition-all duration-500 min-w-max ${
-          showRecommendation ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-        }`}>
+        <div
+          className={`bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-lg shadow-lg transition-all duration-500 min-w-max ${
+            showRecommendation ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+          }`}
+        >
           <div className="flex items-center space-x-2 mb-2">
             <Brain className="w-5 h-5 text-yellow-400" />
             <span className="font-bold text-sm">Gemini AI Recommendation</span>
           </div>
           <p className="text-sm mb-1">
-            <span className="font-semibold text-yellow-400">{aiRecommendation.action.toUpperCase()}</span> 
+            <span className="font-semibold text-yellow-400">
+              {aiRecommendation.action.toUpperCase()}
+            </span>
             (Confidence: {Math.round(aiRecommendation.confidence * 100)}%)
           </p>
           <p className="text-xs text-gray-200">{aiRecommendation.reasoning}</p>
@@ -217,9 +221,7 @@ export const GameStatus: React.FC<GameStatusProps> = ({ gameState, message, curr
       <p className={`text-sm font-medium ${getStatusColor()}`}>{getStatusMessage()}</p>
       {/* Show current bet on small screens only */}
       {currentBet !== undefined && (
-        <p className="text-xs text-gray-300 mt-1 md:hidden">
-          Current Bet: {currentBet} Credits
-        </p>
+        <p className="text-xs text-gray-300 mt-1 md:hidden">Current Bet: {currentBet} Credits</p>
       )}
     </div>
   )

@@ -26,17 +26,18 @@ export function CreditsDisplay() {
           <Coins className="h-5 w-5 text-yellow-500" />
           <span>{loading ? '...' : credits.toLocaleString()} Credits</span>
         </div>
-        
+
         {/* Compact display for mobile screens */}
         <div className="flex sm:hidden items-center space-x-1 text-sm font-semibold">
           <Coins className="h-4 w-4 text-yellow-500" />
           <span className="max-w-[80px] truncate">
-            {loading ? '...' : credits >= 1000000 
-              ? `${(credits / 1000000).toFixed(1)}M`
-              : credits >= 1000 
-                ? `${(credits / 1000).toFixed(1)}K`
-                : credits.toLocaleString()
-            }
+            {loading
+              ? '...'
+              : credits >= 1000000
+                ? `${(credits / 1000000).toFixed(1)}M`
+                : credits >= 1000
+                  ? `${(credits / 1000).toFixed(1)}K`
+                  : credits.toLocaleString()}
           </span>
         </div>
 

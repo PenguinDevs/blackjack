@@ -25,16 +25,17 @@ export function useAIRecommendation() {
         recommendation,
         error: null,
       })
-      
+
       return recommendation
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to get AI recommendation'
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to get AI recommendation'
       setAiState({
         isLoading: false,
         recommendation: null,
         error: errorMessage,
       })
-      
+
       throw error
     }
   }, [])
