@@ -8,6 +8,7 @@ import {
   PlayerAction,
   GameResult,
 } from '../types'
+import { GAME_CONSTANTS } from '../utils/game-utils'
 
 /**
  * Server-side Blackjack game logic
@@ -290,7 +291,9 @@ export class BlackjackEngine {
 
     // Dealer busted
     if (dealerHand.isBusted) {
-      const winnings = playerHand.isBlackjack ? currentBet * 2.5 : currentBet * 2
+      const winnings = playerHand.isBlackjack 
+        ? currentBet * (1 + GAME_CONSTANTS.BLACKJACK_PAYOUT) 
+        : currentBet * (1 + GAME_CONSTANTS.STANDARD_PAYOUT)
       return {
         playerWins: true,
         isDraw: false,
@@ -314,7 +317,7 @@ export class BlackjackEngine {
       return {
         playerWins: true,
         isDraw: false,
-        winnings: currentBet * 2.5, // 3:2 payout
+        winnings: currentBet * (1 + GAME_CONSTANTS.BLACKJACK_PAYOUT),
         reason: 'Player blackjack',
       }
     }
@@ -334,7 +337,7 @@ export class BlackjackEngine {
       return {
         playerWins: true,
         isDraw: false,
-        winnings: currentBet * 2,
+        winnings: currentBet * (1 + GAME_CONSTANTS.STANDARD_PAYOUT),
         reason: `Player wins ${playerHand.value} vs ${dealerHand.value}`,
       }
     } else if (dealerHand.value > playerHand.value) {

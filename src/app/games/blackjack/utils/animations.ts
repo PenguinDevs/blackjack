@@ -1,7 +1,13 @@
 // Animation utilities using Web Animations API
+import { ANIMATION_TIMINGS } from './game-utils'
 
 /**
- * Animation utilities for blackjack game using Web Animations API
+ * Animat        {
+          duration: ANIMATION_TIMINGS.CARD_DEAL,
+          delay,
+          fill: 'forwards',
+          easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)', // Smooth ease-out
+        }ilities for blackjack game using Web Animations API
  */
 export class GameAnimations {
   private static activeAnimations: Animation[] = []
@@ -66,7 +72,7 @@ export class GameAnimations {
       isDealer?: boolean
     }
   ): Promise<void> {
-    const { from, to, delay = 0, duration = 600, isDealer = false } = config
+    const { from, to, delay = 0, duration = ANIMATION_TIMINGS.CARD_DEAL, isDealer = false } = config
 
     // Store original position for restoration (unused but kept for potential future use)
     // const originalTransform = cardElement.style.transform || ''
@@ -180,7 +186,7 @@ export class GameAnimations {
           },
         ],
         {
-          duration: 600,
+          duration: ANIMATION_TIMINGS.CARD_DEAL,
           delay,
           fill: 'forwards',
           easing: 'ease-out',
@@ -360,7 +366,7 @@ export class GameAnimations {
       element,
       [{ transform: 'scale(1)' }, { transform: `scale(${intensity})` }, { transform: 'scale(1)' }],
       {
-        duration: 600,
+        duration: ANIMATION_TIMINGS.CARD_DEAL,
         easing: 'ease-out',
       }
     )

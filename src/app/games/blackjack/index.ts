@@ -16,7 +16,7 @@ export type * from './types'
 
 // Utilities
 export { GameAnimations } from './utils/animations'
-export { GameUtils, GAME_CONSTANTS, ANIMATION_TIMINGS } from './utils/game-utils'
+export { GameUtils, GAME_CONSTANTS, ANIMATION_TIMINGS, GAME_DEFAULTS, GameResultHandler, createEmptyHand } from './utils/game-utils'
 
 // Server Actions
 export {

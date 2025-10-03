@@ -2,6 +2,7 @@
 
 import { useCallback, useRef } from 'react'
 import { GameAnimations } from '../utils/animations'
+import { ANIMATION_TIMINGS } from '../utils/game-utils'
 
 export const useCardAnimations = () => {
   const gameboardRef = useRef<HTMLElement | null>(null)
@@ -92,7 +93,7 @@ export const useCardAnimations = () => {
               from: deckPosition,
               to: targetPosition,
               delay: 0, // Delay already handled above
-              duration: 600, // Reduced duration for snappier feel
+              duration: ANIMATION_TIMINGS.CARD_DEAL, // Reduced duration for snappier feel
               isDealer,
             })
           } catch (error) {

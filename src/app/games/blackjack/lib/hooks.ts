@@ -5,6 +5,7 @@ import { BlackjackGameState, BettingState } from '../types'
 import { BlackjackEngine } from '../lib/blackjack-engine'
 import { useCredits } from '@/hooks/useCredits'
 import { recordGameResult } from './server-actions'
+import { GAME_DEFAULTS, GameResultHandler, createEmptyHand } from '../utils/game-utils'
 
 interface UseBlackjackGameReturn {
   gameState: BlackjackGameState
@@ -22,15 +23,15 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
 
   const [gameState, setGameState] = useState<BlackjackGameState>({
     gameState: 'waiting',
-    playerHand: { cards: [], value: 0, isBusted: false, isBlackjack: false },
-    dealerHand: { cards: [], value: 0, isBusted: false, isBlackjack: false },
+    playerHand: createEmptyHand(),
+    dealerHand: createEmptyHand(),
     currentBet: 0,
     availableActions: [],
     deck: [],
   })
 
   const [bettingState, setBettingState] = useState<BettingState>({
-    amount: 100,
+    amount: GAME_DEFAULTS.INITIAL_BET_AMOUNT,
     showBettingOptions: false,
     isPlacingBet: false,
   })
@@ -54,26 +55,15 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
 
         // Handle game result and credits
         if (newGameState.gameResult) {
-          const { winnings, playerWins, isDraw } = newGameState.gameResult
-          const gameResult = playerWins ? 'win' : isDraw ? 'push' : 'lose'
-
-          try {
-            // Award winnings immediately with optimistic update
-            if (winnings > 0) {
-              const success = await addCredits(winnings)
-              if (!success) {
-                setError('Failed to award winnings')
-                return
-              }
-            }
-
-            // Record game result for statistics (non-blocking)
-            recordGameResult(newGameState.currentBet, winnings, gameResult).catch((error) => {
-              console.warn('Failed to record game statistics:', error)
-            })
-          } catch (error) {
-            console.error('Error processing game result:', error)
-            setError('Failed to process game result')
+          const result = await GameResultHandler.processGameResult(
+            newGameState.gameResult,
+            newGameState.currentBet,
+            { addCredits, recordGameResult }
+          )
+          
+          if (!result.success && result.error) {
+            setError(result.error)
+            return
           }
         }
       } catch (err) {
@@ -147,26 +137,15 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
 
         // Handle game result and credits
         if (newGameState.gameResult) {
-          const { winnings, playerWins, isDraw } = newGameState.gameResult
-          const gameResult = playerWins ? 'win' : isDraw ? 'push' : 'lose'
-
-          try {
-            // Award winnings immediately with optimistic update
-            if (winnings > 0) {
-              const success = await addCredits(winnings)
-              if (!success) {
-                setError('Failed to award winnings')
-                return
-              }
-            }
-
-            // Record game result for statistics (non-blocking)
-            recordGameResult(newGameState.currentBet, winnings, gameResult).catch((error) => {
-              console.warn('Failed to record game statistics:', error)
-            })
-          } catch (error) {
-            console.error('Error processing game result:', error)
-            setError('Failed to process game result')
+          const result = await GameResultHandler.processGameResult(
+            newGameState.gameResult,
+            newGameState.currentBet,
+            { addCredits, recordGameResult }
+          )
+          
+          if (!result.success && result.error) {
+            setError(result.error)
+            return
           }
         }
       }
@@ -198,8 +177,8 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
   const resetGame = useCallback(() => {
     setGameState({
       gameState: 'waiting',
-      playerHand: { cards: [], value: 0, isBusted: false, isBlackjack: false },
-      dealerHand: { cards: [], value: 0, isBusted: false, isBlackjack: false },
+      playerHand: createEmptyHand(),
+      dealerHand: createEmptyHand(),
       currentBet: 0,
       availableActions: [],
       deck: [],
