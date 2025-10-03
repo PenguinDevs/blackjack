@@ -9,6 +9,8 @@ interface CardProps {
 }
 
 export const Card: React.FC<CardProps> = ({ card, className = '', onClick, animationKey }) => {
+  const [isFlipped, setIsFlipped] = React.useState(false)
+  
   // Determine if this card should start hidden for animation
   const shouldStartHidden = React.useMemo(() => {
     // Only hide cards that are part of the initial deal (first 2 cards for each player)
@@ -19,6 +21,21 @@ export const Card: React.FC<CardProps> = ({ card, className = '', onClick, anima
         animationKey === 'dealer-card-0' ||
         animationKey === 'dealer-card-1')
     )
+  }, [animationKey])
+  
+  // Listen for flip attribute changes
+  React.useEffect(() => {
+    const element = document.querySelector(`[data-animation-key="${animationKey}"]`)
+    if (!element) return
+    
+    const observer = new MutationObserver(() => {
+      const flipped = element.getAttribute('data-card-flipped') === 'true'
+      setIsFlipped(flipped)
+    })
+    
+    observer.observe(element, { attributes: true, attributeFilter: ['data-card-flipped'] })
+    
+    return () => observer.disconnect()
   }, [animationKey])
 
   const getSuitSymbol = (suit: CardType['suit']): string => {
@@ -44,6 +61,28 @@ export const Card: React.FC<CardProps> = ({ card, className = '', onClick, anima
     return rank
   }
 
+  // If card is hidden but has been flipped by animation, show revealed card
+  if (card.isHidden && isFlipped) {
+    return (
+      <div
+        className={`w-16 h-24 bg-white border-2 border-gray-300 rounded-lg flex flex-col items-center justify-between p-1 cursor-pointer transition-transform hover:scale-105 shadow-md ${className}`}
+        onClick={onClick}
+        data-animation-key={animationKey}
+        data-card-suit={card.suit}
+        data-card-rank={card.rank}
+        style={{ position: 'relative' }}
+      >
+        <div className={`text-xs font-bold ${getSuitColor(card.suit)}`}>
+          {getDisplayRank(card.rank)}
+        </div>
+        <div className={`text-2xl ${getSuitColor(card.suit)}`}>{getSuitSymbol(card.suit)}</div>
+        <div className={`text-xs font-bold transform rotate-180 ${getSuitColor(card.suit)}`}>
+          {getDisplayRank(card.rank)}
+        </div>
+      </div>
+    )
+  }
+
   if (card.isHidden) {
     return (
       <div
@@ -57,19 +96,6 @@ export const Card: React.FC<CardProps> = ({ card, className = '', onClick, anima
       >
         <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-700 rounded-md flex items-center justify-center">
           <div className="text-white text-xs font-bold">🂠</div>
-        </div>
-        {/* Hidden face for flip animation */}
-        <div
-          className="absolute inset-0 w-full h-full bg-white border-2 border-gray-300 rounded-lg flex flex-col items-center justify-between p-1 opacity-0 backface-hidden"
-          style={{ transform: 'rotateY(180deg)' }}
-        >
-          <div className={`text-xs font-bold ${getSuitColor(card.suit)}`}>
-            {getDisplayRank(card.rank)}
-          </div>
-          <div className={`text-2xl ${getSuitColor(card.suit)}`}>{getSuitSymbol(card.suit)}</div>
-          <div className={`text-xs font-bold transform rotate-180 ${getSuitColor(card.suit)}`}>
-            {getDisplayRank(card.rank)}
-          </div>
         </div>
       </div>
     )

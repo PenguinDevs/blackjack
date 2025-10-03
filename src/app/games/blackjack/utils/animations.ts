@@ -222,26 +222,11 @@ export class GameAnimations {
       this.trackAnimation(flipOut)
 
       flipOut.onfinish = () => {
-        // Change card content to show the revealed card
+        // Mark card as flipped for React to handle the content change
         console.log(`🎯 Revealing card: ${cardRank} of ${cardSuit}`)
-
-        const suitSymbol = this.getSuitSymbol(cardSuit)
-        const suitColor =
-          cardSuit === 'hearts' || cardSuit === 'diamonds' ? 'text-red-500' : 'text-black'
-
-        cardElement.innerHTML = `
-          <div class="text-xs font-bold ${suitColor}">
-            ${cardRank}
-          </div>
-          <div class="text-2xl ${suitColor}">${suitSymbol}</div>
-          <div class="text-xs font-bold transform rotate-180 ${suitColor}">
-            ${cardRank}
-          </div>
-        `
-
-        // Update classes to show revealed card styling
-        cardElement.className =
-          'w-16 h-24 bg-white border-2 border-gray-300 rounded-lg flex flex-col items-center justify-between p-1 cursor-pointer transition-transform hover:scale-105 shadow-md'
+        
+        // Just mark the card as flipped - let React handle the content
+        cardElement.setAttribute('data-card-flipped', 'true')
         cardElement.removeAttribute('data-card-hidden')
 
         // Second half: rotate back to 0deg (showing the face)
