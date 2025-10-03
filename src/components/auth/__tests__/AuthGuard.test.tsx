@@ -1,7 +1,20 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { AuthGuard } from '../AuthGuard'
 import { AuthProvider } from '../AuthProvider'
+
+// Mock Next.js navigation
+const mockPush = vi.fn()
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush,
+    replace: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+}))
 
 // Mock Supabase
 vi.mock('@/lib/supabase', () => ({
@@ -17,6 +30,11 @@ vi.mock('@/lib/supabase', () => ({
 }))
 
 describe('AuthGuard', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockPush.mockClear()
+  })
+
   it('shows loading spinner initially then protected content', async () => {
     const supabaseModule = await import('@/lib/supabase')
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -41,7 +59,7 @@ describe('AuthGuard', () => {
     await screen.findByText('Protected content')
   })
 
-  it('shows authentication required message when not authenticated', async () => {
+  it('redirects to login page when not authenticated', async () => {
     const supabaseModule = await import('@/lib/supabase')
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mockSupabase = supabaseModule.supabase as any
@@ -58,8 +76,10 @@ describe('AuthGuard', () => {
       </AuthProvider>
     )
 
-    await screen.findByText('Authentication Required')
+    // Should show redirecting message and call router.push
+    await screen.findByText('Redirecting...')
     expect(screen.queryByText('Protected content')).not.toBeInTheDocument()
+    expect(mockPush).toHaveBeenCalledWith('/auth/login')
   })
 
   it('shows custom fallback when provided', async () => {

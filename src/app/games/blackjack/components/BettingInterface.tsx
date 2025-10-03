@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { BettingState } from '../types'
@@ -20,16 +20,20 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
   onPlaceBet,
   onShowBettingOptions,
 }) => {
-  const bettingModalRef = useRef<HTMLDivElement>(null)
   const currentBetRef = useRef<HTMLDivElement>(null)
   const bettingButtonsRef = useRef<HTMLDivElement>(null)
   const isInteracting = useRef(false)
+  const [isAnimatingIn, setIsAnimatingIn] = useState(false)
 
   useEffect(() => {
-    if (bettingState.showBettingOptions && bettingModalRef.current) {
-      // Simple CSS transition - no DOM conflicts with React
-      bettingModalRef.current.style.opacity = '1'
-      bettingModalRef.current.style.transform = 'translate(-50%, -50%) scale(1)'
+    if (bettingState.showBettingOptions) {
+      // Small delay to ensure the element is mounted before starting animation
+      const timer = setTimeout(() => {
+        setIsAnimatingIn(true)
+      }, 10)
+      return () => clearTimeout(timer)
+    } else {
+      setIsAnimatingIn(false)
     }
   }, [bettingState.showBettingOptions])
 
@@ -95,6 +99,8 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
           size="lg"
           className="text-2xl px-12 py-6 font-bold relative z-40"
           disabled={credits < bettingState.amount || bettingState.isPlacingBet}
+          onMouseEnter={handleModalMouseEnter}
+          onMouseLeave={handleModalMouseLeave}
         >
           {bettingState.isPlacingBet ? 'Placing Bet...' : 'Place Bet'}
         </Button>
@@ -102,18 +108,16 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
         {/* Betting Modal */}
         {bettingState.showBettingOptions && (
           <div
-            ref={bettingModalRef}
-            className="absolute top-1/2 left-1/2 bg-black/90 backdrop-blur-sm rounded-lg border border-gray-600 shadow-2xl p-6 pt-12 flex flex-col justify-start items-center z-30"
+            className={`absolute top-1/2 left-1/2 bg-black/90 backdrop-blur-sm rounded-lg border border-gray-600 shadow-2xl p-6 pt-12 flex flex-col justify-start items-center z-30 w-[400px] h-[400px] transition-all duration-300 ease-in-out ${
+              isAnimatingIn 
+                ? 'opacity-100 -translate-x-1/2 -translate-y-1/2 scale-100' 
+                : 'opacity-0 -translate-x-1/2 -translate-y-1/2 scale-0'
+            }`}
             onMouseEnter={handleModalMouseEnter}
             onMouseLeave={handleModalMouseLeave}
             style={{
-              opacity: 0,
-              transform: 'translate(-50%, -50%) scale(0.1)',
-              transformOrigin: '50% 50%',
               top: '-90px',
-              width: '400px',
-              height: '400px',
-              transition: 'opacity 0.3s ease, transform 0.3s ease',
+              transformOrigin: '50% 50%',
             }}
           >
             {/* Modal Header */}

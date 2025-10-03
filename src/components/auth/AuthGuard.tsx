@@ -1,6 +1,8 @@
 'use client'
 
 import { useAuth } from './AuthProvider'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 interface AuthGuardProps {
   children: React.ReactNode
@@ -9,6 +11,14 @@ interface AuthGuardProps {
 
 export function AuthGuard({ children, fallback }: AuthGuardProps) {
   const { user, loading } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!loading && !user) {
+      // Redirect to login page when user is not authenticated
+      router.push('/auth/login')
+    }
+  }, [user, loading, router])
 
   if (loading) {
     return (
@@ -23,8 +33,8 @@ export function AuthGuard({ children, fallback }: AuthGuardProps) {
       fallback || (
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h2>
-            <p className="text-gray-600">Please sign in to access this page.</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Redirecting...</h2>
+            <p className="text-gray-600">Taking you to the sign-in page...</p>
           </div>
         </div>
       )

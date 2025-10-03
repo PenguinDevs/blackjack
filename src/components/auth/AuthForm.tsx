@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { AuthError } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
@@ -23,6 +24,7 @@ interface AccountExistsError {
 }
 
 export function AuthForm({ mode, onToggleMode }: AuthFormProps) {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -45,6 +47,8 @@ export function AuthForm({ mode, onToggleMode }: AuthFormProps) {
         })
         if (error) throw error
         setMessage('Signed in successfully!')
+        // Redirect to blackjack game after successful sign-in
+        router.push('/games/blackjack')
       } else {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -67,7 +71,12 @@ export function AuthForm({ mode, onToggleMode }: AuthFormProps) {
             type: 'account-exists',
             message: `An account with this email already exists.`,
           })
+        } else if (data.session) {
+          // User signed up and was immediately signed in (email confirmation disabled)
+          setMessage('Account created successfully!')
+          router.push('/games/blackjack')
         } else {
+          // User needs to confirm email
           setMessage('Check your email for the confirmation link!')
         }
       }
@@ -108,7 +117,7 @@ export function AuthForm({ mode, onToggleMode }: AuthFormProps) {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent('/games/blackjack')}`,
         },
       })
       if (error) throw error

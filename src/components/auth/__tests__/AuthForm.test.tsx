@@ -2,6 +2,19 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { AuthForm } from '../AuthForm'
 
+// Mock Next.js navigation
+const mockPush = vi.fn()
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush,
+    replace: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+}))
+
 // Mock Supabase
 vi.mock('@/lib/supabase', () => ({
   supabase: {
@@ -18,6 +31,7 @@ describe('AuthForm', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    mockPush.mockClear()
   })
 
   it('renders sign in form by default', () => {
@@ -194,5 +208,56 @@ describe('AuthForm', () => {
     fireEvent.click(switchButton)
 
     expect(mockToggleMode).toHaveBeenCalledTimes(1)
+  })
+
+  it('redirects to blackjack game after successful sign in', async () => {
+    const { supabase } = await import('@/lib/supabase')
+
+    // Mock successful sign in
+    supabase.auth.signInWithPassword = vi.fn().mockResolvedValue({
+      data: { user: { id: 'fake-id', email: 'test@example.com' }, session: { access_token: 'fake-token' } },
+      error: null,
+    })
+
+    render(<AuthForm mode="signin" onToggleMode={mockToggleMode} />)
+
+    const emailInput = screen.getByLabelText(/email/i)
+    const passwordInput = screen.getByLabelText(/password/i)
+    const submitButton = screen.getByRole('button', { name: /sign in/i })
+
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
+    fireEvent.change(passwordInput, { target: { value: 'password123' } })
+    fireEvent.click(submitButton)
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith('/games/blackjack')
+    })
+  })
+
+  it('redirects to blackjack game after successful sign up with immediate session', async () => {
+    const { supabase } = await import('@/lib/supabase')
+
+    // Mock successful sign up with immediate session
+    supabase.auth.signUp = vi.fn().mockResolvedValue({
+      data: { 
+        user: { id: 'fake-id', email: 'test@example.com' }, 
+        session: { access_token: 'fake-token' }
+      },
+      error: null,
+    })
+
+    render(<AuthForm mode="signup" onToggleMode={mockToggleMode} />)
+
+    const emailInput = screen.getByLabelText(/email/i)
+    const passwordInput = screen.getByLabelText(/password/i)
+    const submitButton = screen.getByRole('button', { name: /sign up/i })
+
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
+    fireEvent.change(passwordInput, { target: { value: 'password123' } })
+    fireEvent.click(submitButton)
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith('/games/blackjack')
+    })
   })
 })
