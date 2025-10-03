@@ -125,7 +125,7 @@ export const useCardAnimations = () => {
     console.log('Starting initial deal animation - hiding cards first')
 
     // Wait for DOM to be ready with all card elements
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 300))
 
     // Sequence: Player card 1 -> Dealer card 1 -> Player card 2 -> Dealer card 2 (hidden)
     const sequence = [
