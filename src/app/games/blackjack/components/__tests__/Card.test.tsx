@@ -9,61 +9,31 @@ describe('Hand Component', () => {
   ]
 
   it('displays numeric value correctly', () => {
-    render(
-      <Hand
-        cards={mockCards}
-        label="Test Hand"
-        value={21}
-      />
-    )
+    render(<Hand cards={mockCards} label="Test Hand" value={21} />)
 
     expect(screen.getByText('Value: 21')).toBeInTheDocument()
   })
 
   it('displays string value correctly (like "?")', () => {
-    render(
-      <Hand
-        cards={mockCards}
-        label="Dealer"
-        value="?"
-      />
-    )
+    render(<Hand cards={mockCards} label="Dealer" value="?" />)
 
     expect(screen.getByText('Value: ?')).toBeInTheDocument()
   })
 
   it('does not display value when undefined', () => {
-    render(
-      <Hand
-        cards={mockCards}
-        label="Test Hand"
-        value={undefined}
-      />
-    )
+    render(<Hand cards={mockCards} label="Test Hand" value={undefined} />)
 
     expect(screen.queryByText(/Value:/)).not.toBeInTheDocument()
   })
 
   it('displays label correctly', () => {
-    render(
-      <Hand
-        cards={mockCards}
-        label="Dealer"
-        value="?"
-      />
-    )
+    render(<Hand cards={mockCards} label="Dealer" value="?" />)
 
     expect(screen.getByText('Dealer')).toBeInTheDocument()
   })
 
   it('displays "?" for empty cards (initial game state)', () => {
-    render(
-      <Hand
-        cards={[]}
-        label="Dealer"
-        value="?"
-      />
-    )
+    render(<Hand cards={[]} label="Dealer" value="?" />)
 
     expect(screen.getByText('Value: ?')).toBeInTheDocument()
   })

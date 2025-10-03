@@ -8,20 +8,16 @@ interface CardProps {
   animationKey?: string // Unique key for animation targeting
 }
 
-export const Card: React.FC<CardProps> = ({ 
-  card, 
-  className = '', 
-  onClick, 
-  animationKey
-}) => {
+export const Card: React.FC<CardProps> = ({ card, className = '', onClick, animationKey }) => {
   // Determine if this card should start hidden for animation
   const shouldStartHidden = React.useMemo(() => {
     // Only hide cards that are part of the initial deal (first 2 cards for each player)
-    return animationKey && (
-      animationKey === 'player-card-0' || 
-      animationKey === 'player-card-1' ||
-      animationKey === 'dealer-card-0' ||
-      animationKey === 'dealer-card-1'
+    return (
+      animationKey &&
+      (animationKey === 'player-card-0' ||
+        animationKey === 'player-card-1' ||
+        animationKey === 'dealer-card-0' ||
+        animationKey === 'dealer-card-1')
     )
   }, [animationKey])
 
@@ -63,7 +59,10 @@ export const Card: React.FC<CardProps> = ({
           <div className="text-white text-xs font-bold">🂠</div>
         </div>
         {/* Hidden face for flip animation */}
-        <div className="absolute inset-0 w-full h-full bg-white border-2 border-gray-300 rounded-lg flex flex-col items-center justify-between p-1 opacity-0 backface-hidden" style={{ transform: 'rotateY(180deg)' }}>
+        <div
+          className="absolute inset-0 w-full h-full bg-white border-2 border-gray-300 rounded-lg flex flex-col items-center justify-between p-1 opacity-0 backface-hidden"
+          style={{ transform: 'rotateY(180deg)' }}
+        >
           <div className={`text-xs font-bold ${getSuitColor(card.suit)}`}>
             {getDisplayRank(card.rank)}
           </div>
@@ -103,13 +102,13 @@ interface HandProps {
   isDealer?: boolean
 }
 
-export const Hand: React.FC<HandProps> = ({ 
-  cards, 
-  label, 
-  value, 
-  className = '', 
-  onCardClick, 
-  isDealer = false
+export const Hand: React.FC<HandProps> = ({
+  cards,
+  label,
+  value,
+  className = '',
+  onCardClick,
+  isDealer = false,
 }) => {
   return (
     <div className={`text-center ${className}`}>
@@ -117,7 +116,10 @@ export const Hand: React.FC<HandProps> = ({
       {value !== undefined && (
         <div className="text-lg font-semibold text-white mb-3">Value: {value}</div>
       )}
-      <div className="flex justify-center space-x-2" data-hand-type={isDealer ? 'dealer' : 'player'}>
+      <div
+        className="flex justify-center space-x-2"
+        data-hand-type={isDealer ? 'dealer' : 'player'}
+      >
         {cards.map((card, index) => (
           <Card
             key={`${card.suit}-${card.rank}-${index}`}

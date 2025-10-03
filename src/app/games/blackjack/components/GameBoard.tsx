@@ -37,44 +37,44 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   const [isInitialDealComplete, setIsInitialDealComplete] = React.useState(false)
   const cardAnimations = useCardAnimations()
 
-  const handleCardAnimations = React.useCallback(async (
-    prevState: BlackjackGameState,
-    currentState: BlackjackGameState
-  ) => {
-    // Prevent multiple simultaneous animation sequences
-    if (cardAnimations.isAnimating()) {
-      return
-    }
-
-    onAnimationStart?.()
-
-    try {
-      // Initial deal animation (both players get their first cards)
-      if (prevState.gameState === 'waiting') {
-        console.log('Starting initial deal animation')
-        await cardAnimations.animateInitialDeal()
-        console.log('Initial deal animation completed')
-        // Enable game actions now that initial deal is done
-        setIsInitialDealComplete(true)
+  const handleCardAnimations = React.useCallback(
+    async (prevState: BlackjackGameState, currentState: BlackjackGameState) => {
+      // Prevent multiple simultaneous animation sequences
+      if (cardAnimations.isAnimating()) {
+        return
       }
-      // Player hit animation
-      else if (prevState.playerHand.cards.length < currentState.playerHand.cards.length) {
-        const newCardIndex = currentState.playerHand.cards.length - 1
-        console.log(`Animating new player card: ${newCardIndex}`)
-        await cardAnimations.animateNewCard(`player-card-${newCardIndex}`, false)
-      }
-      // Dealer hit animation
-      else if (prevState.dealerHand.cards.length < currentState.dealerHand.cards.length) {
-        const newCardIndex = currentState.dealerHand.cards.length - 1
-        console.log(`Animating new dealer card: ${newCardIndex}`)
-        await cardAnimations.animateNewCard(`dealer-card-${newCardIndex}`, true)
-      }
-    } catch (error) {
-      console.warn('Animation error:', error)
-    }
 
-    onAnimationComplete?.()
-  }, [cardAnimations, onAnimationStart, onAnimationComplete])
+      onAnimationStart?.()
+
+      try {
+        // Initial deal animation (both players get their first cards)
+        if (prevState.gameState === 'waiting') {
+          console.log('Starting initial deal animation')
+          await cardAnimations.animateInitialDeal()
+          console.log('Initial deal animation completed')
+          // Enable game actions now that initial deal is done
+          setIsInitialDealComplete(true)
+        }
+        // Player hit animation
+        else if (prevState.playerHand.cards.length < currentState.playerHand.cards.length) {
+          const newCardIndex = currentState.playerHand.cards.length - 1
+          console.log(`Animating new player card: ${newCardIndex}`)
+          await cardAnimations.animateNewCard(`player-card-${newCardIndex}`, false)
+        }
+        // Dealer hit animation
+        else if (prevState.dealerHand.cards.length < currentState.dealerHand.cards.length) {
+          const newCardIndex = currentState.dealerHand.cards.length - 1
+          console.log(`Animating new dealer card: ${newCardIndex}`)
+          await cardAnimations.animateNewCard(`dealer-card-${newCardIndex}`, true)
+        }
+      } catch (error) {
+        console.warn('Animation error:', error)
+      }
+
+      onAnimationComplete?.()
+    },
+    [cardAnimations, onAnimationStart, onAnimationComplete]
+  )
 
   useEffect(() => {
     // Initialize animation scope
@@ -106,8 +106,11 @@ export const GameBoard: React.FC<GameBoardProps> = ({
     }
 
     // Detect initial deal: waiting → player-turn (cards appear for first time)
-    const isInitialDeal = prev.gameState === 'waiting' && current.gameState === 'player-turn' && current.playerHand.cards.length > 0
-    
+    const isInitialDeal =
+      prev.gameState === 'waiting' &&
+      current.gameState === 'player-turn' &&
+      current.playerHand.cards.length > 0
+
     // Detect new cards during gameplay
     const hasNewPlayerCards = prev.playerHand.cards.length < current.playerHand.cards.length
     const hasNewDealerCards = prev.dealerHand.cards.length < current.dealerHand.cards.length
@@ -130,15 +133,20 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 
   // Handle dealer card flip when hole card is revealed
   const handleDealerCardFlip = React.useCallback(async () => {
-    if ((gameState.gameState === 'dealer-turn' || gameState.gameState === 'game-over') && gameState.dealerHand.cards.length > 1) {
-      const holeCard = gameState.dealerHand.cards.find(card => card.isHidden)
+    if (
+      (gameState.gameState === 'dealer-turn' || gameState.gameState === 'game-over') &&
+      gameState.dealerHand.cards.length > 1
+    ) {
+      const holeCard = gameState.dealerHand.cards.find((card) => card.isHidden)
       if (holeCard) {
         console.log('🔄 Flipping dealer hole card')
         await cardAnimations.animateCardFlip('dealer-card-1')
-        
+
         // Force the card element to show the revealed card content
         // This is a visual override since the game state might not update immediately
-        const cardElement = rootRef.current?.querySelector('[data-animation-key="dealer-card-1"]') as HTMLElement
+        const cardElement = rootRef.current?.querySelector(
+          '[data-animation-key="dealer-card-1"]'
+        ) as HTMLElement
         if (cardElement) {
           // Remove the hidden card styling and ensure it's visible
           cardElement.classList.add('animated')
@@ -158,8 +166,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 
   const showBettingInterface = gameState.gameState === 'waiting'
   const showGameActions =
-    gameState.gameState === 'player-turn' && 
-    gameState.availableActions.length > 0 && 
+    gameState.gameState === 'player-turn' &&
+    gameState.availableActions.length > 0 &&
     isInitialDealComplete
 
   return (
@@ -183,8 +191,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({
               value={
                 gameState.gameState === 'game-over' || gameState.gameState === 'dealer-turn'
                   ? gameState.dealerHand.value
-                  : gameState.dealerHand.cards.length === 0 || gameState.dealerHand.cards.some(card => card.isHidden)
-                    ? "?"
+                  : gameState.dealerHand.cards.length === 0 ||
+                      gameState.dealerHand.cards.some((card) => card.isHidden)
+                    ? '?'
                     : gameState.dealerHand.value
               }
               isDealer={true}

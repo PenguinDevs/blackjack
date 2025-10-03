@@ -1,4 +1,4 @@
-import { Card, Suit, Rank, BlackjackGameState } from '../types'
+import { Card, Suit, Rank } from '../types'
 
 /**
  * Utility functions for blackjack game

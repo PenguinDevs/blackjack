@@ -32,10 +32,13 @@ export const useCardAnimations = () => {
   }, [])
 
   // Add animation to queue
-  const queueAnimation = useCallback((animation: () => Promise<void>) => {
-    animationQueue.current.push(animation)
-    processAnimationQueue()
-  }, [processAnimationQueue])
+  const queueAnimation = useCallback(
+    (animation: () => Promise<void>) => {
+      animationQueue.current.push(animation)
+      processAnimationQueue()
+    },
+    [processAnimationQueue]
+  )
 
   // Animate a single card flying to its position
   const animateNewCard = useCallback(
@@ -46,7 +49,7 @@ export const useCardAnimations = () => {
         queueAnimation(async () => {
           // Wait for delay before starting animation
           if (delay > 0) {
-            await new Promise(delayResolve => setTimeout(delayResolve, delay))
+            await new Promise((delayResolve) => setTimeout(delayResolve, delay))
           }
 
           const cardElement = gameboardRef.current?.querySelector(
@@ -57,7 +60,10 @@ export const useCardAnimations = () => {
             console.warn(`Card element not found for key: ${cardKey}`)
             // Log all available card elements for debugging
             const allCards = gameboardRef.current?.querySelectorAll('[data-animation-key]')
-            console.log('Available cards:', Array.from(allCards || []).map((el: Element) => el.getAttribute('data-animation-key')))
+            console.log(
+              'Available cards:',
+              Array.from(allCards || []).map((el: Element) => el.getAttribute('data-animation-key'))
+            )
             resolve()
             return
           }
@@ -118,7 +124,7 @@ export const useCardAnimations = () => {
     console.log('Starting initial deal animation - hiding cards first')
 
     // Wait for DOM to be ready with all card elements
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 100))
 
     // Sequence: Player card 1 -> Dealer card 1 -> Player card 2 -> Dealer card 2 (hidden)
     const sequence = [
@@ -139,9 +145,9 @@ export const useCardAnimations = () => {
         cardElement = gameboardRef.current.querySelector(
           `[data-animation-key="${key}"]`
         ) as HTMLElement
-        
+
         if (!cardElement) {
-          await new Promise(resolve => setTimeout(resolve, 50))
+          await new Promise((resolve) => setTimeout(resolve, 50))
           attempts++
         }
       }
@@ -158,19 +164,19 @@ export const useCardAnimations = () => {
     // Now animate each card flying in
     for (let i = 0; i < sequence.length; i++) {
       const { key, isDealer } = sequence[i]
-      
+
       console.log(`Animating card ${i + 1}/${sequence.length}: ${key}`)
-      
+
       try {
         await animateNewCard(key, isDealer, 0)
-        await new Promise(resolve => setTimeout(resolve, 100)) // Stagger between cards
+        await new Promise((resolve) => setTimeout(resolve, 100)) // Stagger between cards
       } catch (error) {
         console.warn(`Failed to animate ${key}:`, error)
       }
     }
 
     // Additional buffer to ensure all animations settle
-    await new Promise(resolve => setTimeout(resolve, 200))
+    await new Promise((resolve) => setTimeout(resolve, 200))
   }, [animateNewCard])
 
   // Animate card flip (for revealing dealer's hidden card)

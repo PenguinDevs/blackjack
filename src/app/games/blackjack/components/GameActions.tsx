@@ -70,11 +70,10 @@ export const GameActions: React.FC<GameActionsProps> = ({
 
 interface GameStatusProps {
   gameState: GameState
-  currentBet?: number
   message?: string
 }
 
-export const GameStatus: React.FC<GameStatusProps> = ({ gameState, currentBet, message }) => {
+export const GameStatus: React.FC<GameStatusProps> = ({ gameState, message }) => {
   const getStatusMessage = (): string => {
     if (message) return message
 
