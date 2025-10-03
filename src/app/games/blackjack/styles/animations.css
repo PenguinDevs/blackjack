@@ -47,6 +47,57 @@
   transition: all 0.2s ease-out;
 }
 
+/* Gold glow animation for AI recommendations */
+@keyframes golden-glow {
+  0% {
+    box-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.8), 0 0 30px rgba(251, 191, 36, 0.6);
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+    transform: scale(1);
+  }
+}
+
+@keyframes golden-pulse {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* AI recommendation card animation */
+@keyframes slide-in-from-top {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.ai-recommended {
+  animation: golden-glow 2s ease-in-out infinite;
+  background: linear-gradient(-45deg, #fbbf24, #f59e0b, #d97706, #fbbf24) !important;
+  background-size: 400% 400% !important;
+  animation: golden-glow 2s ease-in-out infinite, golden-pulse 3s ease-in-out infinite !important;
+  border: 2px solid #f59e0b !important;
+  color: #000 !important;
+  font-weight: bold !important;
+}
+
+.ai-recommendation-card {
+  animation: slide-in-from-top 0.5s ease-out;
+}
+
 /* Smooth hover effects */
 .card-hover {
   transition: transform 0.2s ease-out;

@@ -32,6 +32,18 @@ export interface GameResult {
   reason: string
 }
 
+export interface AIRecommendation {
+  action: 'hit' | 'stand'
+  reasoning: string
+  confidence: number // 0-1 scale
+}
+
+export interface AIRecommendationState {
+  isLoading: boolean
+  recommendation: AIRecommendation | null
+  error: string | null
+}
+
 export interface BlackjackGameState {
   gameState: GameState
   playerHand: Hand

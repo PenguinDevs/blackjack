@@ -1,12 +1,13 @@
 'use client'
 
 import React, { useRef, useEffect } from 'react'
-import { BlackjackGameState, BettingState, PlayerAction } from '../types'
+import { BlackjackGameState, BettingState, PlayerAction, AIRecommendation } from '../types'
 import { Hand } from './Card'
 import { BettingInterface } from './BettingInterface'
 import { GameActions, GameStatus } from './GameActions'
 import { GameAnimations } from '../utils/animations'
 import { useCardAnimations } from '../hooks/useCardAnimations'
+import { getAIRecommendation } from '../lib/gemini-ai-service'
 import '../styles/animations.css'
 
 interface GameBoardProps {
@@ -36,6 +37,16 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   const prevGameStateRef = useRef<BlackjackGameState | null>(null)
   const [isInitialDealComplete, setIsInitialDealComplete] = React.useState(false)
   const cardAnimations = useCardAnimations()
+
+  // Handle AI recommendation requests
+  const handleAIRecommendation = React.useCallback(async (gameState: BlackjackGameState): Promise<AIRecommendation> => {
+    try {
+      return await getAIRecommendation(gameState)
+    } catch (error) {
+      console.error('Failed to get AI recommendation:', error)
+      throw error
+    }
+  }, [])
 
   const handleCardAnimations = React.useCallback(
     async (prevState: BlackjackGameState, currentState: BlackjackGameState) => {
@@ -222,16 +233,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({
               isDealer={false}
               gameState={gameState.gameState}
             />
-
-            {/* Game Action Buttons */}
-            {showGameActions && (
-              <GameActions
-                gameState={gameState.gameState}
-                availableActions={gameState.availableActions}
-                onPlayerAction={onPlayerAction}
-                disabled={gameState.gameState !== 'player-turn'}
-              />
-            )}
           </div>
 
           {/* Game Result */}
@@ -271,6 +272,20 @@ export const GameBoard: React.FC<GameBoardProps> = ({
             </div>
           )}
         </div>
+
+        {/* Game Action Buttons - Outside game board container, below everything */}
+        {showGameActions && (
+          <div className="flex justify-center -mt-12">
+            <GameActions
+              gameState={gameState.gameState}
+              availableActions={gameState.availableActions}
+              onPlayerAction={onPlayerAction}
+              disabled={gameState.gameState !== 'player-turn'}
+              fullGameState={gameState}
+              onAskAI={handleAIRecommendation}
+            />
+          </div>
+        )}
       </div>
     </div>
   )
