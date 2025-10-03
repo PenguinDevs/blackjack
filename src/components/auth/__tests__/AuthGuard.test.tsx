@@ -79,9 +79,9 @@ describe('AuthGuard', () => {
     // Should show redirecting message and call router.push
     await screen.findByText('Redirecting...')
     expect(screen.queryByText('Protected content')).not.toBeInTheDocument()
-    
+
     // Wait a bit for useEffect to trigger
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await new Promise((resolve) => setTimeout(resolve, 0))
     expect(mockPush).toHaveBeenCalledWith('/auth/login')
   })
 
