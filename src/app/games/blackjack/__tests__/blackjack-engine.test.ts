@@ -237,13 +237,18 @@ describe('Full Game Integration', () => {
     expect(game.playerHand.cards).toHaveLength(2)
     expect(game.dealerHand.cards).toHaveLength(2)
 
-    // Player stands (simple strategy)
-    game = BlackjackEngine.playerStand(game)
-    expect(game.gameState).toBe('dealer-turn')
+    // If player doesn't have blackjack, they can make moves
+    if (game.gameState === 'player-turn') {
+      // Player stands (simple strategy)
+      game = BlackjackEngine.playerStand(game)
+      expect(game.gameState).toBe('dealer-turn')
+    }
 
-    // Dealer plays
-    game = BlackjackEngine.playDealerTurn(game)
-    expect(game.gameState).toBe('game-over')
+    // If game state is dealer-turn, dealer plays
+    if (game.gameState === 'dealer-turn') {
+      game = BlackjackEngine.playDealerTurn(game)
+      expect(game.gameState).toBe('game-over')
+    }
 
     // Complete game
     game = BlackjackEngine.completeGame(game)
