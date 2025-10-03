@@ -3,6 +3,8 @@
 import { useState, useCallback } from 'react'
 import { BlackjackGameState, BettingState } from '../types'
 import { BlackjackEngine } from '../lib/blackjack-engine'
+import { useCredits } from '@/hooks/useCredits'
+import { placeBet, recordGameResult } from './server-actions'
 
 interface UseBlackjackGameReturn {
   gameState: BlackjackGameState
@@ -16,6 +18,8 @@ interface UseBlackjackGameReturn {
 }
 
 export function useBlackjackGame(): UseBlackjackGameReturn {
+  const { credits, subtractCredits, addCredits, refreshCredits } = useCredits()
+  
   const [gameState, setGameState] = useState<BlackjackGameState>({
     gameState: 'waiting',
     playerHand: { cards: [], value: 0, isBusted: false, isBlackjack: false, isSoft: false },
@@ -39,6 +43,17 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
       setError(null)
       setIsLoading(true)
       setBettingState((prev) => ({ ...prev, isPlacingBet: true }))
+
+      // Check if user has sufficient credits
+      if (credits < betAmount) {
+        throw new Error('Insufficient credits to place bet')
+      }
+
+      // Deduct credits for the bet (with optimistic update)
+      const success = await subtractCredits(betAmount)
+      if (!success) {
+        throw new Error('Failed to deduct credits for bet')
+      }
 
       // Initialize game with bet
       let newGameState = BlackjackEngine.initializeGame(betAmount)
@@ -66,7 +81,7 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
       setIsLoading(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [credits, subtractCredits])
 
   const playerHit = useCallback(async () => {
     try {
@@ -80,13 +95,38 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
       if (newGameState.playerHand.isBusted) {
         newGameState = BlackjackEngine.completeGame(newGameState)
         setGameState(newGameState)
+
+        // Handle game result and credits
+        if (newGameState.gameResult) {
+          const { winnings, playerWins, isDraw } = newGameState.gameResult
+          const gameResult = playerWins ? 'win' : isDraw ? 'push' : 'lose'
+          
+          try {
+            // Award winnings immediately with optimistic update
+            if (winnings > 0) {
+              const success = await addCredits(winnings)
+              if (!success) {
+                setError('Failed to award winnings')
+                return
+              }
+            }
+            
+            // Record game result for statistics (non-blocking)
+            recordGameResult(newGameState.currentBet, winnings, gameResult).catch((error) => {
+              console.warn('Failed to record game statistics:', error)
+            })
+          } catch (error) {
+            console.error('Error processing game result:', error)
+            setError('Failed to process game result')
+          }
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to hit')
     } finally {
       setIsLoading(false)
     }
-  }, [gameState])
+  }, [gameState, addCredits])
 
   const playerStand = useCallback(async () => {
     try {
@@ -119,12 +159,37 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
       await new Promise((resolve) => setTimeout(resolve, 500))
       newGameState = BlackjackEngine.completeGame(newGameState)
       setGameState(newGameState)
+
+      // Handle game result and credits
+      if (newGameState.gameResult) {
+        const { winnings, playerWins, isDraw } = newGameState.gameResult
+        const gameResult = playerWins ? 'win' : isDraw ? 'push' : 'lose'
+        
+        try {
+          // Award winnings immediately with optimistic update
+          if (winnings > 0) {
+            const success = await addCredits(winnings)
+            if (!success) {
+              setError('Failed to award winnings')
+              return
+            }
+          }
+          
+          // Record game result for statistics (non-blocking)
+          recordGameResult(newGameState.currentBet, winnings, gameResult).catch((error) => {
+            console.warn('Failed to record game statistics:', error)
+          })
+        } catch (error) {
+          console.error('Error processing game result:', error)
+          setError('Failed to process game result')
+        }
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to complete dealer turn')
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [addCredits])
 
   const resetGame = useCallback(() => {
     setGameState({

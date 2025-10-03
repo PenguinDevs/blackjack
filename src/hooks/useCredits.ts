@@ -105,9 +105,15 @@ export function useCredits() {
   const addCredits = async (amount: number) => {
     if (!user) return false
 
+    const originalCredits = credits
+
     try {
       setError(null)
+      
+      // Optimistically update credits immediately for instant feedback
       const newCredits = credits + amount
+      setCredits(newCredits)
+      creditsEmitter.emit()
 
       const { error } = await supabase
         .from('profiles')
@@ -116,12 +122,12 @@ export function useCredits() {
 
       if (error) throw error
 
-      setCredits(newCredits)
-      // Notify all other components that credits have changed
-      creditsEmitter.emit()
       return true
     } catch (err) {
       console.error('Error adding credits:', err)
+      // Revert optimistic update on error
+      setCredits(originalCredits)
+      creditsEmitter.emit()
       setError(err instanceof Error ? err.message : 'Failed to add credits')
       return false
     }
@@ -131,9 +137,15 @@ export function useCredits() {
   const subtractCredits = async (amount: number) => {
     if (!user || credits < amount) return false
 
+    const originalCredits = credits
+    
     try {
       setError(null)
+      
+      // Optimistically update credits immediately for instant feedback
       const newCredits = credits - amount
+      setCredits(newCredits)
+      creditsEmitter.emit()
 
       const { error } = await supabase
         .from('profiles')
@@ -142,12 +154,12 @@ export function useCredits() {
 
       if (error) throw error
 
-      setCredits(newCredits)
-      // Notify all other components that credits have changed
-      creditsEmitter.emit()
       return true
     } catch (err) {
       console.error('Error subtracting credits:', err)
+      // Revert optimistic update on error
+      setCredits(originalCredits)
+      creditsEmitter.emit()
       setError(err instanceof Error ? err.message : 'Failed to subtract credits')
       return false
     }
