@@ -187,7 +187,11 @@ export const GameBoard: React.FC<GameBoardProps> = ({
         <div className="w-full h-[600px] relative game-board">
           {/* Game Status - Fixed Position at Top Center */}
           <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-            <GameStatus gameState={gameState.gameState} message={gameState.gameResult?.reason} />
+            <GameStatus 
+              gameState={gameState.gameState} 
+              message={gameState.gameResult?.reason}
+              currentBet={gameState.gameState !== 'waiting' ? gameState.currentBet : undefined}
+            />
           </div>
 
           {/* Dealer Section - Fixed Position */}
@@ -262,9 +266,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({
             </div>
           )}
 
-          {/* Current Bet Display */}
+          {/* Current Bet Display - Hidden on small screens */}
           {gameState.gameState !== 'waiting' && (
-            <div className="absolute bottom-8 left-8">
+            <div className="absolute bottom-8 left-8 hidden md:block">
               <div className="rounded-lg p-4">
                 <p className="text-sm font-medium mb-2">Current Bet</p>
                 <p className="text-xl font-black ">{gameState.currentBet} Credits</p>

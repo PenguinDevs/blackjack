@@ -168,9 +168,10 @@ export const GameActions: React.FC<GameActionsProps> = ({
 interface GameStatusProps {
   gameState: GameState
   message?: string
+  currentBet?: number
 }
 
-export const GameStatus: React.FC<GameStatusProps> = ({ gameState, message }) => {
+export const GameStatus: React.FC<GameStatusProps> = ({ gameState, message, currentBet }) => {
   const getStatusMessage = (): string => {
     if (message) return message
 
@@ -214,6 +215,12 @@ export const GameStatus: React.FC<GameStatusProps> = ({ gameState, message }) =>
   return (
     <div className="text-center">
       <p className={`text-sm font-medium ${getStatusColor()}`}>{getStatusMessage()}</p>
+      {/* Show current bet on small screens only */}
+      {currentBet !== undefined && (
+        <p className="text-xs text-gray-300 mt-1 md:hidden">
+          Current Bet: {currentBet} Credits
+        </p>
+      )}
     </div>
   )
 }
