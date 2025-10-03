@@ -93,7 +93,7 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
         <Button
           onClick={onPlaceBet}
           size="lg"
-          className="text-2xl px-12 py-6 bg-white text-black hover:bg-gray-100 font-bold relative z-40"
+          className="text-2xl px-12 py-6 font-bold relative z-40"
           disabled={credits < bettingState.amount || bettingState.isPlacingBet}
         >
           {bettingState.isPlacingBet ? 'Placing Bet...' : 'Place Bet'}

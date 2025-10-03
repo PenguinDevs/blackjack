@@ -178,9 +178,9 @@ export const Hand: React.FC<HandProps> = ({
 
   return (
     <div ref={handRef} className={`text-center ${className}`}>
-      <h3 className="text-xl font-bold text-white mb-2">{label}</h3>
+      <h3 className="text-xl font-bold text-foreground mb-2">{label}</h3>
       {value !== undefined && (
-        <div className={`text-lg font-semibold text-white mb-3 transition-opacity duration-300 ${showValue ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`text-lg font-semibold text-foreground mb-3 transition-opacity duration-300 ${showValue ? 'opacity-100' : 'opacity-0'}`}>
           Value: {showValue ? value : '•••'}
         </div>
       )}
