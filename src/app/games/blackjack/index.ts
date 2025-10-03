@@ -16,12 +16,9 @@ export type * from './types'
 
 // Utilities
 export { GameAnimations } from './utils/animations'
-export { GameUtils, GAME_CONSTANTS, ANIMATION_TIMINGS, GAME_DEFAULTS, GameResultHandler, createEmptyHand } from './utils/game-utils'
+export { GAME_CONSTANTS, ANIMATION_TIMINGS, GAME_DEFAULTS, GameResultHandler, createEmptyHand } from './utils/game-utils'
 
 // Server Actions
 export {
-  initializeBlackjackGame,
-  executePlayerAction,
-  validateGameState,
-  calculateGameStatistics,
+  recordGameResult,
 } from './lib/server-actions'
