@@ -282,7 +282,7 @@ export class BlackjackEngine {
     }
 
     const { dealerHand, deck } = gameState
-    
+
     if (dealerHand.value >= 17) {
       // Dealer should stand, transition to game-over
       return {
@@ -326,8 +326,8 @@ export class BlackjackEngine {
 
     // Dealer busted
     if (dealerHand.isBusted) {
-      const winnings = playerHand.isBlackjack 
-        ? currentBet * (1 + GAME_CONSTANTS.BLACKJACK_PAYOUT) 
+      const winnings = playerHand.isBlackjack
+        ? currentBet * (1 + GAME_CONSTANTS.BLACKJACK_PAYOUT)
         : currentBet * (1 + GAME_CONSTANTS.STANDARD_PAYOUT)
       return {
         playerWins: true,

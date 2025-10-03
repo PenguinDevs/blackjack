@@ -215,7 +215,10 @@ describe('AuthForm', () => {
 
     // Mock successful sign in
     supabase.auth.signInWithPassword = vi.fn().mockResolvedValue({
-      data: { user: { id: 'fake-id', email: 'test@example.com' }, session: { access_token: 'fake-token' } },
+      data: {
+        user: { id: 'fake-id', email: 'test@example.com' },
+        session: { access_token: 'fake-token' },
+      },
       error: null,
     })
 
@@ -239,9 +242,9 @@ describe('AuthForm', () => {
 
     // Mock successful sign up with immediate session
     supabase.auth.signUp = vi.fn().mockResolvedValue({
-      data: { 
-        user: { id: 'fake-id', email: 'test@example.com' }, 
-        session: { access_token: 'fake-token' }
+      data: {
+        user: { id: 'fake-id', email: 'test@example.com' },
+        session: { access_token: 'fake-token' },
       },
       error: null,
     })

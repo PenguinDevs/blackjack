@@ -100,4 +100,3 @@ export async function recordGameResult(
     return { success: false, message: 'Internal server error' }
   }
 }
-

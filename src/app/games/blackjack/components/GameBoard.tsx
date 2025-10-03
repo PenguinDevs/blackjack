@@ -185,8 +185,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({
               cards={gameState.dealerHand.cards}
               label="Dealer"
               value={
-                gameState.gameState === 'game-over' || 
-                (gameState.gameState === 'dealer-turn' && !gameState.dealerHand.cards.some((card) => card.isHidden))
+                gameState.gameState === 'game-over' ||
+                (gameState.gameState === 'dealer-turn' &&
+                  !gameState.dealerHand.cards.some((card) => card.isHidden))
                   ? gameState.dealerHand.value
                   : gameState.dealerHand.cards.length === 0 ||
                       gameState.dealerHand.cards.some((card) => card.isHidden)

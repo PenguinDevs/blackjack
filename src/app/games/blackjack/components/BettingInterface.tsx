@@ -109,8 +109,8 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
         {bettingState.showBettingOptions && (
           <div
             className={`absolute top-1/2 left-1/2 bg-black/90 backdrop-blur-sm rounded-lg border border-gray-600 shadow-2xl p-6 pt-12 flex flex-col justify-start items-center z-30 w-[400px] h-[400px] transition-all duration-300 ease-in-out ${
-              isAnimatingIn 
-                ? 'opacity-100 -translate-x-1/2 -translate-y-1/2 scale-100' 
+              isAnimatingIn
+                ? 'opacity-100 -translate-x-1/2 -translate-y-1/2 scale-100'
                 : 'opacity-0 -translate-x-1/2 -translate-y-1/2 scale-0'
             }`}
             onMouseEnter={handleModalMouseEnter}

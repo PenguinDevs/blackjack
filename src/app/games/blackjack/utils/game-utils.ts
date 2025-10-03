@@ -56,7 +56,11 @@ export function createEmptyHand() {
  */
 export interface GameResultProcessor {
   addCredits: (amount: number) => Promise<boolean>
-  recordGameResult: (bet: number, winnings: number, result: 'win' | 'lose' | 'push') => Promise<unknown>
+  recordGameResult: (
+    bet: number,
+    winnings: number,
+    result: 'win' | 'lose' | 'push'
+  ) => Promise<unknown>
 }
 
 export class GameResultHandler {

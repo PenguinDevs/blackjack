@@ -44,15 +44,18 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
       try {
         // Step 1: First reveal the dealer's hidden card (flip animation will be handled by GameBoard)
         await new Promise((resolve) => setTimeout(resolve, 500))
-        
+
         // Reveal dealer's hidden card
-        const revealedCards = currentGameState.dealerHand.cards.map(card => ({ ...card, isHidden: false }))
+        const revealedCards = currentGameState.dealerHand.cards.map((card) => ({
+          ...card,
+          isHidden: false,
+        }))
         let newGameState = {
           ...currentGameState,
-          dealerHand: BlackjackEngine.createHand(revealedCards)
+          dealerHand: BlackjackEngine.createHand(revealedCards),
         }
         setGameState(newGameState)
-        
+
         // Wait for card flip animation to complete
         await new Promise((resolve) => setTimeout(resolve, 1000))
 
@@ -60,10 +63,10 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
         while (BlackjackEngine.shouldDealerHit(newGameState)) {
           // Simulate dealer thinking time between cards
           await new Promise((resolve) => setTimeout(resolve, 800))
-          
+
           newGameState = BlackjackEngine.dealerHit(newGameState)
           setGameState(newGameState)
-          
+
           // Wait for card animation
           await new Promise((resolve) => setTimeout(resolve, 800))
         }
@@ -84,7 +87,7 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
             newGameState.currentBet,
             { addCredits, recordGameResult }
           )
-          
+
           if (!result.success && result.error) {
             setError(result.error)
             return
@@ -166,7 +169,7 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
             newGameState.currentBet,
             { addCredits, recordGameResult }
           )
-          
+
           if (!result.success && result.error) {
             setError(result.error)
             return

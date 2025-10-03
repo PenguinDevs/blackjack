@@ -10,7 +10,7 @@ interface CardProps {
 
 export const Card: React.FC<CardProps> = ({ card, className = '', onClick, animationKey }) => {
   const [isFlipped, setIsFlipped] = React.useState(false)
-  
+
   // Determine if this card should start hidden for animation
   const shouldStartHidden = React.useMemo(() => {
     // Only hide cards that are part of the initial deal (first 2 cards for each player)
@@ -22,19 +22,19 @@ export const Card: React.FC<CardProps> = ({ card, className = '', onClick, anima
         animationKey === 'dealer-card-1')
     )
   }, [animationKey])
-  
+
   // Listen for flip attribute changes
   React.useEffect(() => {
     const element = document.querySelector(`[data-animation-key="${animationKey}"]`)
     if (!element) return
-    
+
     const observer = new MutationObserver(() => {
       const flipped = element.getAttribute('data-card-flipped') === 'true'
       setIsFlipped(flipped)
     })
-    
+
     observer.observe(element, { attributes: true, attributeFilter: ['data-card-flipped'] })
-    
+
     return () => observer.disconnect()
   }, [animationKey])
 

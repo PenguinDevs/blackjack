@@ -179,7 +179,7 @@ export class GameAnimations {
       flipOut.onfinish = () => {
         // Mark card as flipped for React to handle the content change
         console.log(`🎯 Revealing card: ${cardRank} of ${cardSuit}`)
-        
+
         // Just mark the card as flipped - let React handle the content
         cardElement.setAttribute('data-card-flipped', 'true')
         cardElement.removeAttribute('data-card-hidden')
