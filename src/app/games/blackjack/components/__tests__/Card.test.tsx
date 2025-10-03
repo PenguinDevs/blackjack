@@ -9,13 +9,13 @@ describe('Hand Component', () => {
   ]
 
   it('displays numeric value correctly', () => {
-    render(<Hand cards={mockCards} label="Test Hand" value={21} />)
+    render(<Hand cards={mockCards} label="Test Hand" value={21} gameState="game-over" />)
 
     expect(screen.getByText('Value: 21')).toBeInTheDocument()
   })
 
   it('displays string value correctly (like "?")', () => {
-    render(<Hand cards={mockCards} label="Dealer" value="?" />)
+    render(<Hand cards={mockCards} label="Dealer" value="?" gameState="game-over" />)
 
     expect(screen.getByText('Value: ?')).toBeInTheDocument()
   })
@@ -33,7 +33,7 @@ describe('Hand Component', () => {
   })
 
   it('displays "?" for empty cards (initial game state)', () => {
-    render(<Hand cards={[]} label="Dealer" value="?" />)
+    render(<Hand cards={[]} label="Dealer" value="?" gameState="game-over" />)
 
     expect(screen.getByText('Value: ?')).toBeInTheDocument()
   })
