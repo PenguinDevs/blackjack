@@ -184,7 +184,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   return (
     <div ref={rootRef} className="w-full">
       <div className="p-8">
-        <div className="w-full h-[600px] relative game-board">
+        <div className="w-full h-[600px] relative game-board z-10">
           {/* Game Status - Fixed Position at Top Center */}
           <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
             <GameStatus 
@@ -279,7 +279,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 
         {/* Game Action Buttons - Outside game board container, below everything */}
         {showGameActions && (
-          <div className="flex justify-center -mt-12">
+          <div className="flex justify-center -mt-12 relative z-50">
             <GameActions
               gameState={gameState.gameState}
               availableActions={gameState.availableActions}
