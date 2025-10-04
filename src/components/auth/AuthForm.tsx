@@ -46,7 +46,6 @@ export function AuthForm({ mode, onToggleMode }: AuthFormProps) {
           password,
         })
         if (error) throw error
-        setMessage('Signed in successfully!')
         // Redirect to blackjack game after successful sign-in
         router.push('/games/blackjack')
       } else {
@@ -73,7 +72,6 @@ export function AuthForm({ mode, onToggleMode }: AuthFormProps) {
           })
         } else if (data.session) {
           // User signed up and was immediately signed in (email confirmation disabled)
-          setMessage('Account created successfully!')
           router.push('/games/blackjack')
         } else {
           // User needs to confirm email
