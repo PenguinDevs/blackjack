@@ -187,7 +187,7 @@ describe('BlackjackEngine', () => {
 
       const result = BlackjackEngine.determineGameResult(playerBlackjack)
       expect(result.playerWins).toBe(true)
-      expect(result.winnings).toBe(GAME_CONSTANTS.BLACKJACK_WINNINGS) // 100 bet + 150 (3:2 payout)
+      expect(result.winnings).toBe(250) // 100 bet + 150 (3:2 payout)
       expect(result.reason).toBe('Player blackjack')
     })
 

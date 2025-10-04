@@ -48,9 +48,6 @@ export const GAME_CONSTANTS = {
   DEALER_19: 19, // 10 + 9
   PLAYER_20: 20,
 
-  // Payout calculations
-  BLACKJACK_WINNINGS: 250, // 100 bet + 150 (3:2 payout)
-
   // Default values
   INITIAL_BET_AMOUNT: 100,
 } as const
