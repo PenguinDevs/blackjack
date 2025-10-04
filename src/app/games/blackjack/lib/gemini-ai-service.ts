@@ -1,6 +1,7 @@
 'use server'
 
 import { BlackjackGameState } from '../types'
+import { GAME_CONSTANTS, AI_CONSTANTS, PLAYER_ACTIONS } from '../utils/game-utils'
 
 export interface AIRecommendation {
   action: 'hit' | 'stand'
@@ -143,7 +144,7 @@ export async function getAIRecommendation(
       }
 
       // Ensure action is valid
-      if (recommendation.action !== 'hit' && recommendation.action !== 'stand') {
+      if (recommendation.action !== PLAYER_ACTIONS.HIT && recommendation.action !== PLAYER_ACTIONS.STAND) {
         throw new Error(`Invalid action recommendation: ${recommendation.action}`)
       }
 
@@ -193,28 +194,28 @@ function getBasicStrategyRecommendation(gameState: BlackjackGameState): AIRecomm
   const dealerUpcardValue = dealerUpcard?.value || 10
 
   // Basic blackjack strategy logic
-  let action: 'hit' | 'stand' = 'stand'
+  let action: 'hit' | 'stand' = PLAYER_ACTIONS.STAND
   let reasoning = ''
-  let confidence = 0.9
+  let confidence: number = AI_CONSTANTS.DEFAULT_CONFIDENCE
 
-  if (playerValue >= 17) {
-    action = 'stand'
+  if (playerValue >= GAME_CONSTANTS.DEALER_STAND_VALUE) {
+    action = PLAYER_ACTIONS.STAND
     reasoning = 'Player has 17 or higher - basic strategy says to stand'
-    confidence = 0.95
+    confidence = AI_CONSTANTS.CONFIDENCE_HIGH
   } else if (playerValue <= 11) {
-    action = 'hit'
+    action = PLAYER_ACTIONS.HIT
     reasoning = 'Player has 11 or lower - impossible to bust, always hit'
-    confidence = 1.0
+    confidence = AI_CONSTANTS.CONFIDENCE_PERFECT
   } else if (playerValue >= 12 && playerValue <= 16) {
     // Dealer's upcard determines strategy for 12-16
     if (dealerUpcardValue >= 2 && dealerUpcardValue <= 6) {
-      action = 'stand'
+      action = PLAYER_ACTIONS.STAND
       reasoning = `Dealer shows weak upcard (${dealerUpcard?.rank}), likely to bust - stand on ${playerValue}`
-      confidence = 0.85
+      confidence = AI_CONSTANTS.CONFIDENCE_MEDIUM
     } else {
-      action = 'hit'
+      action = PLAYER_ACTIONS.HIT
       reasoning = `Dealer shows strong upcard (${dealerUpcard?.rank}), must improve hand value of ${playerValue}`
-      confidence = 0.8
+      confidence = AI_CONSTANTS.CONFIDENCE_MEDIUM_LOW
     }
   }
 
@@ -233,9 +234,9 @@ function getBasicStrategyRecommendation(gameState: BlackjackGameState): AIRecomm
 
     // If we can count an ace as 11 without busting
     if (hardValue + 10 === playerValue) {
-      action = 'hit'
+      action = PLAYER_ACTIONS.HIT
       reasoning = `Soft ${playerValue} - can't bust by taking another card`
-      confidence = 0.9
+      confidence = AI_CONSTANTS.CONFIDENCE_MEDIUM_HIGH
     }
   }
 

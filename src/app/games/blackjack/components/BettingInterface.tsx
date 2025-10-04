@@ -4,6 +4,7 @@ import React, { useRef, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { BettingState } from '../types'
+import { GAME_CONSTANTS } from '../utils/game-utils'
 
 interface BettingInterfaceProps {
   bettingState: BettingState
@@ -168,31 +169,31 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
               <p className="text-xs sm:text-sm text-gray-300 mb-2 sm:mb-3 text-center">Quick adjustments:</p>
               <div className="flex gap-2 sm:gap-3 justify-center">
                 <Button
-                  onClick={() => increaseBet(5)}
+                  onClick={() => increaseBet(GAME_CONSTANTS.BET_INCREMENT_SMALL)}
                   variant="outline"
                   size="sm"
                   className="bg-green-600 text-white hover:bg-green-700 border-green-600 transition-colors"
-                  disabled={!canAffordBet(5)}
+                  disabled={!canAffordBet(GAME_CONSTANTS.BET_INCREMENT_SMALL)}
                 >
-                  +5
+                  +{GAME_CONSTANTS.BET_INCREMENT_SMALL}
                 </Button>
                 <Button
-                  onClick={() => increaseBet(25)}
+                  onClick={() => increaseBet(GAME_CONSTANTS.BET_INCREMENT_MEDIUM)}
                   variant="outline"
                   size="sm"
                   className="bg-blue-600 text-white hover:bg-blue-700 border-blue-600 transition-colors"
-                  disabled={!canAffordBet(25)}
+                  disabled={!canAffordBet(GAME_CONSTANTS.BET_INCREMENT_MEDIUM)}
                 >
-                  +25
+                  +{GAME_CONSTANTS.BET_INCREMENT_MEDIUM}
                 </Button>
                 <Button
-                  onClick={() => increaseBet(100)}
+                  onClick={() => increaseBet(GAME_CONSTANTS.BET_INCREMENT_LARGE)}
                   variant="outline"
                   size="sm"
                   className="bg-purple-600 text-white hover:bg-purple-700 border-purple-600 transition-colors"
-                  disabled={!canAffordBet(100)}
+                  disabled={!canAffordBet(GAME_CONSTANTS.BET_INCREMENT_LARGE)}
                 >
-                  +100
+                  +{GAME_CONSTANTS.BET_INCREMENT_LARGE}
                 </Button>
               </div>
             </div>

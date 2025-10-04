@@ -8,14 +8,13 @@ import {
   PlayerAction,
   GameResult,
 } from '../types'
-import { GAME_CONSTANTS } from '../utils/game-utils'
+import { GAME_CONSTANTS, PLAYER_ACTIONS } from '../utils/game-utils'
 
 /**
  * Server-side Blackjack game logic
  * Handles game state, card dealing, scoring
  */
 export class BlackjackEngine {
-  private static readonly DECK_SIZE = 52
   private static readonly SUITS: Suit[] = ['hearts', 'diamonds', 'clubs', 'spades']
   private static readonly RANKS: Rank[] = [
     'A',
@@ -59,11 +58,11 @@ export class BlackjackEngine {
   private static getCardValue(rank: Rank): number {
     switch (rank) {
       case 'A':
-        return 11
+        return GAME_CONSTANTS.ACE_HIGH_VALUE
       case 'K':
       case 'Q':
       case 'J':
-        return 10
+        return GAME_CONSTANTS.FACE_CARD_VALUE
       default:
         return parseInt(rank)
     }
@@ -105,15 +104,15 @@ export class BlackjackEngine {
 
     // Handle aces
     for (let i = 0; i < aces; i++) {
-      if (value + 11 <= 21) {
-        value += 11
+      if (value + GAME_CONSTANTS.ACE_HIGH_VALUE <= 21) {
+        value += GAME_CONSTANTS.ACE_HIGH_VALUE
       } else {
-        value += 1
+        value += GAME_CONSTANTS.ACE_LOW_VALUE
       }
     }
 
-    const isBusted = value > 21
-    const isBlackjack = cards.length === 2 && value === 21 && !cards.some((c) => c.isHidden)
+    const isBusted = value > GAME_CONSTANTS.BLACKJACK_VALUE
+    const isBlackjack = cards.length === 2 && value === GAME_CONSTANTS.BLACKJACK_VALUE && !cards.some((c) => c.isHidden)
 
     return { value, isBusted, isBlackjack }
   }
@@ -181,7 +180,7 @@ export class BlackjackEngine {
 
     // Determine next game state
     let nextState: GameState = 'player-turn'
-    let availableActions: PlayerAction[] = ['hit', 'stand']
+    let availableActions: PlayerAction[] = [PLAYER_ACTIONS.HIT, PLAYER_ACTIONS.STAND]
 
     // Check for blackjacks
     if (playerHand.isBlackjack) {
@@ -212,7 +211,7 @@ export class BlackjackEngine {
     const newPlayerHand = this.createHand(newCards)
 
     let nextState: GameState = 'player-turn'
-    let availableActions: PlayerAction[] = ['hit', 'stand']
+    let availableActions: PlayerAction[] = [PLAYER_ACTIONS.HIT, PLAYER_ACTIONS.STAND]
 
     // Check if player busted
     if (newPlayerHand.isBusted) {
@@ -245,7 +244,7 @@ export class BlackjackEngine {
   }
 
   /**
-   * Dealer plays according to rules (hit on 16, stand on 17)
+   * Dealer plays according to rules (hit on 16 or less, stand on 17 or more)
    */
   static playDealerTurn(gameState: BlackjackGameState): BlackjackGameState {
     if (gameState.gameState !== 'dealer-turn') {
@@ -259,7 +258,7 @@ export class BlackjackEngine {
     dealerHand = this.createHand(revealedCards)
 
     // Dealer hits on 16 or less, stands on 17 or more (including soft 17)
-    while (dealerHand.value < 17) {
+    while (dealerHand.value < GAME_CONSTANTS.DEALER_STAND_VALUE) {
       const { card, remainingDeck } = this.dealCard(deck)
       dealerHand = this.createHand([...dealerHand.cards, card])
       deck = remainingDeck
@@ -283,7 +282,7 @@ export class BlackjackEngine {
 
     const { dealerHand, deck } = gameState
 
-    if (dealerHand.value >= 17) {
+    if (dealerHand.value >= GAME_CONSTANTS.DEALER_STAND_VALUE) {
       // Dealer should stand, transition to game-over
       return {
         ...gameState,
@@ -305,7 +304,7 @@ export class BlackjackEngine {
    * Checks if dealer should continue hitting
    */
   static shouldDealerHit(gameState: BlackjackGameState): boolean {
-    return gameState.dealerHand.value < 17 && !gameState.dealerHand.isBusted
+    return gameState.dealerHand.value < GAME_CONSTANTS.DEALER_STAND_VALUE && !gameState.dealerHand.isBusted
   }
 
   /**

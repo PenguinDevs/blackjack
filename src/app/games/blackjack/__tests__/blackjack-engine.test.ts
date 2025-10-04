@@ -6,24 +6,25 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { BlackjackEngine } from '../lib/blackjack-engine'
 import { BlackjackGameState, Card } from '../types'
+import { GAME_CONSTANTS, PLAYER_ACTIONS } from '../utils/game-utils'
 
 describe('BlackjackEngine', () => {
   let gameState: BlackjackGameState
 
   beforeEach(() => {
-    gameState = BlackjackEngine.initializeGame(100)
+    gameState = BlackjackEngine.initializeGame(GAME_CONSTANTS.INITIAL_BET_AMOUNT)
   })
 
   describe('Game Initialization', () => {
     it('should initialize game with correct bet amount', () => {
-      expect(gameState.currentBet).toBe(100)
+      expect(gameState.currentBet).toBe(GAME_CONSTANTS.INITIAL_BET_AMOUNT)
       expect(gameState.gameState).toBe('dealing')
-      expect(gameState.deck).toHaveLength(52)
+      expect(gameState.deck).toHaveLength(GAME_CONSTANTS.DECK_SIZE)
     })
 
     it('should create a shuffled deck', () => {
       const deck = BlackjackEngine.createDeck()
-      expect(deck).toHaveLength(52)
+      expect(deck).toHaveLength(GAME_CONSTANTS.DECK_SIZE)
 
       // Check that all suits and ranks are present
       const suits = new Set(deck.map((card) => card.suit))
@@ -41,50 +42,50 @@ describe('BlackjackEngine', () => {
       expect(initializedGame.playerHand.cards).toHaveLength(2)
       expect(initializedGame.dealerHand.cards).toHaveLength(2)
       expect(initializedGame.dealerHand.cards[1].isHidden).toBe(true)
-      expect(initializedGame.deck).toHaveLength(48) // 52 - 4 cards dealt
+      expect(initializedGame.deck).toHaveLength(GAME_CONSTANTS.CARDS_REMAINING_AFTER_DEAL) // 52 - 4 cards dealt
     })
 
     it('should transition to player turn after dealing', () => {
       const dealtGame = BlackjackEngine.dealInitialCards(gameState)
       expect(dealtGame.gameState).toBe('player-turn')
-      expect(dealtGame.availableActions).toContain('hit')
-      expect(dealtGame.availableActions).toContain('stand')
+      expect(dealtGame.availableActions).toContain(PLAYER_ACTIONS.HIT)
+      expect(dealtGame.availableActions).toContain(PLAYER_ACTIONS.STAND)
     })
   })
 
   describe('Hand Evaluation', () => {
     it('should calculate hand values correctly', () => {
       const cards: Card[] = [
-        { suit: 'hearts', rank: '10', value: 10 },
-        { suit: 'spades', rank: 'A', value: 11 },
+        { suit: 'hearts', rank: '10', value: GAME_CONSTANTS.FACE_CARD_VALUE },
+        { suit: 'spades', rank: 'A', value: GAME_CONSTANTS.ACE_HIGH_VALUE },
       ]
 
       const result = BlackjackEngine.calculateHandValue(cards)
-      expect(result.value).toBe(21)
+      expect(result.value).toBe(GAME_CONSTANTS.BLACKJACK_VALUE)
       expect(result.isBlackjack).toBe(true)
     })
 
     it('should handle ace low when necessary', () => {
       const cards: Card[] = [
-        { suit: 'hearts', rank: '10', value: 10 },
-        { suit: 'spades', rank: '5', value: 5 },
-        { suit: 'clubs', rank: 'A', value: 11 },
+        { suit: 'hearts', rank: '10', value: GAME_CONSTANTS.FACE_CARD_VALUE },
+        { suit: 'spades', rank: '5', value: GAME_CONSTANTS.CARD_VALUE_5 },
+        { suit: 'clubs', rank: 'A', value: GAME_CONSTANTS.ACE_HIGH_VALUE },
       ]
 
       const result = BlackjackEngine.calculateHandValue(cards)
-      expect(result.value).toBe(16) // Ace counts as 1
+      expect(result.value).toBe(GAME_CONSTANTS.SOFT_16) // Ace counts as 1
       expect(result.isBusted).toBe(false)
     })
 
     it('should detect busted hands', () => {
       const cards: Card[] = [
-        { suit: 'hearts', rank: '10', value: 10 },
-        { suit: 'spades', rank: '8', value: 8 },
-        { suit: 'clubs', rank: '7', value: 7 },
+        { suit: 'hearts', rank: '10', value: GAME_CONSTANTS.FACE_CARD_VALUE },
+        { suit: 'spades', rank: '8', value: GAME_CONSTANTS.CARD_VALUE_8 },
+        { suit: 'clubs', rank: '7', value: GAME_CONSTANTS.CARD_VALUE_7 },
       ]
 
       const result = BlackjackEngine.calculateHandValue(cards)
-      expect(result.value).toBe(25)
+      expect(result.value).toBe(GAME_CONSTANTS.BUST_25)
       expect(result.isBusted).toBe(true)
     })
   })
@@ -97,9 +98,15 @@ describe('BlackjackEngine', () => {
     })
 
     it('should handle player hit', () => {
-      const hitGame = BlackjackEngine.playerHit(dealtGame)
-      expect(hitGame.playerHand.cards).toHaveLength(3)
-      expect(hitGame.deck).toHaveLength(47)
+      // Only test hit if player is allowed to hit (not blackjack)
+      if (dealtGame.gameState === 'player-turn') {
+        const hitGame = BlackjackEngine.playerHit(dealtGame)
+        expect(hitGame.playerHand.cards).toHaveLength(3)
+        expect(hitGame.deck).toHaveLength(GAME_CONSTANTS.CARDS_REMAINING_AFTER_DEAL - 1) // 47
+      } else {
+        // If player has blackjack, skip this test
+        expect(dealtGame.playerHand.isBlackjack).toBe(true)
+      }
     })
 
     it('should handle player stand', () => {
@@ -143,8 +150,8 @@ describe('BlackjackEngine', () => {
       const standGame = BlackjackEngine.playerStand(dealtGame)
       const dealerGame = BlackjackEngine.playDealerTurn(standGame)
 
-      // Dealer should stand on 17 or higher
-      expect(dealerGame.dealerHand.value >= 17 || dealerGame.dealerHand.isBusted).toBe(true)
+      // Dealer should stand on DEALER_STAND_VALUE or higher
+      expect(dealerGame.dealerHand.value >= GAME_CONSTANTS.DEALER_STAND_VALUE || dealerGame.dealerHand.isBusted).toBe(true)
     })
   })
 
@@ -156,19 +163,19 @@ describe('BlackjackEngine', () => {
         gameState: 'game-over',
         playerHand: {
           cards: [
-            { suit: 'hearts', rank: 'A', value: 11 },
-            { suit: 'spades', rank: 'K', value: 10 },
+            { suit: 'hearts', rank: 'A', value: GAME_CONSTANTS.ACE_HIGH_VALUE },
+            { suit: 'spades', rank: 'K', value: GAME_CONSTANTS.FACE_CARD_VALUE },
           ],
-          value: 21,
+          value: GAME_CONSTANTS.BLACKJACK_VALUE,
           isBusted: false,
           isBlackjack: true,
         },
         dealerHand: {
           cards: [
-            { suit: 'clubs', rank: '10', value: 10 },
-            { suit: 'diamonds', rank: '9', value: 9 },
+            { suit: 'clubs', rank: '10', value: GAME_CONSTANTS.FACE_CARD_VALUE },
+            { suit: 'diamonds', rank: '9', value: GAME_CONSTANTS.CARD_VALUE_9 },
           ],
-          value: 19,
+          value: GAME_CONSTANTS.DEALER_19,
           isBusted: false,
           isBlackjack: false,
         },
@@ -177,7 +184,7 @@ describe('BlackjackEngine', () => {
 
       const result = BlackjackEngine.determineGameResult(playerBlackjack)
       expect(result.playerWins).toBe(true)
-      expect(result.winnings).toBe(250) // 100 bet + 150 (3:2 payout)
+      expect(result.winnings).toBe(GAME_CONSTANTS.BLACKJACK_WINNINGS) // 100 bet + 150 (3:2 payout)
       expect(result.reason).toBe('Player blackjack')
     })
 
@@ -187,22 +194,22 @@ describe('BlackjackEngine', () => {
         gameState: 'game-over',
         playerHand: {
           cards: [],
-          value: 20,
+          value: GAME_CONSTANTS.PLAYER_20,
           isBusted: false,
           isBlackjack: false,
         },
         dealerHand: {
           cards: [],
-          value: 20,
+          value: GAME_CONSTANTS.PLAYER_20,
           isBusted: false,
           isBlackjack: false,
         },
-        currentBet: 100,
+        currentBet: GAME_CONSTANTS.INITIAL_BET_AMOUNT,
       }
 
       const result = BlackjackEngine.determineGameResult(pushGame)
       expect(result.isDraw).toBe(true)
-      expect(result.winnings).toBe(100) // Bet returned
+      expect(result.winnings).toBe(GAME_CONSTANTS.INITIAL_BET_AMOUNT) // Bet returned
     })
   })
 
@@ -214,14 +221,14 @@ describe('BlackjackEngine', () => {
 
     it('should handle multiple aces correctly', () => {
       const multipleAces: Card[] = [
-        { suit: 'hearts', rank: 'A', value: 11 },
-        { suit: 'spades', rank: 'A', value: 11 },
-        { suit: 'clubs', rank: 'A', value: 11 },
-        { suit: 'diamonds', rank: '8', value: 8 },
+        { suit: 'hearts', rank: 'A', value: GAME_CONSTANTS.ACE_HIGH_VALUE },
+        { suit: 'spades', rank: 'A', value: GAME_CONSTANTS.ACE_HIGH_VALUE },
+        { suit: 'clubs', rank: 'A', value: GAME_CONSTANTS.ACE_HIGH_VALUE },
+        { suit: 'diamonds', rank: '8', value: GAME_CONSTANTS.CARD_VALUE_8 },
       ]
 
       const result = BlackjackEngine.calculateHandValue(multipleAces)
-      expect(result.value).toBe(21) // A(11) + A(1) + A(1) + 8 = 21
+      expect(result.value).toBe(GAME_CONSTANTS.BLACKJACK_VALUE) // A(11) + A(1) + A(1) + 8 = 21
     })
   })
 })
@@ -230,7 +237,7 @@ describe('BlackjackEngine', () => {
 describe('Full Game Integration', () => {
   it('should play a complete game', () => {
     // Initialize game
-    let game = BlackjackEngine.initializeGame(100)
+    let game = BlackjackEngine.initializeGame(GAME_CONSTANTS.INITIAL_BET_AMOUNT)
 
     // Deal initial cards
     game = BlackjackEngine.dealInitialCards(game)

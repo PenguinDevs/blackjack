@@ -60,7 +60,7 @@ Built as part of a submission for the Monash Association of Coding take home tas
 
 Visit [http://localhost:3000](http://localhost:3000) to see the app.
 
-## 🔐 Authentication Setup
+## Authentication Setup
 
 ### Supabase OAuth Configuration
 

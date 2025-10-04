@@ -1,17 +1,18 @@
 import { render, screen } from '@testing-library/react'
 import { Hand } from '../Card'
 import { Card as CardType } from '../../types'
+import { GAME_CONSTANTS } from '../../utils/game-utils'
 
 describe('Hand Component', () => {
   const mockCards: CardType[] = [
-    { suit: 'hearts', rank: 'A', value: 11, isHidden: false },
-    { suit: 'spades', rank: 'K', value: 10, isHidden: true },
+    { suit: 'hearts', rank: 'A', value: GAME_CONSTANTS.ACE_HIGH_VALUE, isHidden: false },
+    { suit: 'spades', rank: 'K', value: GAME_CONSTANTS.FACE_CARD_VALUE, isHidden: true },
   ]
 
   it('displays numeric value correctly', () => {
-    render(<Hand cards={mockCards} label="Test Hand" value={21} gameState="game-over" />)
+    render(<Hand cards={mockCards} label="Test Hand" value={GAME_CONSTANTS.BLACKJACK_VALUE} gameState="game-over" />)
 
-    expect(screen.getByText('Value: 21')).toBeInTheDocument()
+    expect(screen.getByText(`Value: ${GAME_CONSTANTS.BLACKJACK_VALUE}`)).toBeInTheDocument()
   })
 
   it('displays string value correctly (like "?")', () => {

@@ -5,7 +5,7 @@ import { BlackjackGameState, BettingState } from '../types'
 import { BlackjackEngine } from '../lib/blackjack-engine'
 import { useCredits } from '@/hooks/useCredits'
 import { recordGameResult } from './server-actions'
-import { GAME_DEFAULTS, GameResultHandler, createEmptyHand } from '../utils/game-utils'
+import { GAME_DEFAULTS, GAME_CONSTANTS, GameResultHandler, createEmptyHand } from '../utils/game-utils'
 
 interface UseBlackjackGameReturn {
   gameState: BlackjackGameState
@@ -31,7 +31,7 @@ export function useBlackjackGame(): UseBlackjackGameReturn {
   })
 
   const [bettingState, setBettingState] = useState<BettingState>({
-    amount: GAME_DEFAULTS.INITIAL_BET_AMOUNT,
+    amount: GAME_CONSTANTS.INITIAL_BET_AMOUNT,
     showBettingOptions: false,
     isPlacingBet: false,
   })
