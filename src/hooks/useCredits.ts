@@ -93,20 +93,21 @@ export function useCredits(dependencies: UseCreditsDependencies = { creditServic
       if (!user) return false
 
       const originalCredits = state.credits
+      const optimisticCredits = state.credits + amount
 
       try {
         dispatch({ type: 'SET_ERROR', payload: null })
 
         // Optimistic update
-        dispatch({ type: 'SET_CREDITS', payload: state.credits + amount })
-        creditEventManager.emit()
+        dispatch({ type: 'SET_CREDITS', payload: optimisticCredits })
+        creditEventManager.emit(optimisticCredits)
 
         const success = await dependencies.creditService.addCredits(user.id, amount)
 
         if (!success) {
           // Revert optimistic update
           dispatch({ type: 'SET_CREDITS', payload: originalCredits })
-          creditEventManager.emit()
+          creditEventManager.emit(originalCredits)
           dispatch({ type: 'SET_ERROR', payload: 'Failed to add credits' })
         }
 
@@ -114,7 +115,7 @@ export function useCredits(dependencies: UseCreditsDependencies = { creditServic
       } catch (err) {
         // Revert optimistic update
         dispatch({ type: 'SET_CREDITS', payload: originalCredits })
-        creditEventManager.emit()
+        creditEventManager.emit(originalCredits)
         const errorMessage = err instanceof Error ? err.message : 'Failed to add credits'
         dispatch({ type: 'SET_ERROR', payload: errorMessage })
         return false
@@ -129,20 +130,21 @@ export function useCredits(dependencies: UseCreditsDependencies = { creditServic
       if (!user || state.credits < amount) return false
 
       const originalCredits = state.credits
+      const optimisticCredits = state.credits - amount
 
       try {
         dispatch({ type: 'SET_ERROR', payload: null })
 
         // Optimistic update
-        dispatch({ type: 'SET_CREDITS', payload: state.credits - amount })
-        creditEventManager.emit()
+        dispatch({ type: 'SET_CREDITS', payload: optimisticCredits })
+        creditEventManager.emit(optimisticCredits)
 
         const success = await dependencies.creditService.subtractCredits(user.id, amount)
 
         if (!success) {
           // Revert optimistic update
           dispatch({ type: 'SET_CREDITS', payload: originalCredits })
-          creditEventManager.emit()
+          creditEventManager.emit(originalCredits)
           dispatch({ type: 'SET_ERROR', payload: 'Failed to subtract credits' })
         }
 
@@ -150,7 +152,7 @@ export function useCredits(dependencies: UseCreditsDependencies = { creditServic
       } catch (err) {
         // Revert optimistic update
         dispatch({ type: 'SET_CREDITS', payload: originalCredits })
-        creditEventManager.emit()
+        creditEventManager.emit(originalCredits)
         const errorMessage = err instanceof Error ? err.message : 'Failed to subtract credits'
         dispatch({ type: 'SET_ERROR', payload: errorMessage })
         return false
@@ -167,8 +169,14 @@ export function useCredits(dependencies: UseCreditsDependencies = { creditServic
   // Subscribe to credit events from other components
   useEffect(() => {
     const unsubscribe = creditEventManager.subscribe({
-      onCreditsChanged: () => {
-        fetchCredits()
+      onCreditsChanged: (newCredits?: number) => {
+        // If specific credits are provided, use them (optimistic update)
+        // Otherwise fetch from server (initial load or external changes)
+        if (newCredits !== undefined) {
+          dispatch({ type: 'SET_CREDITS', payload: newCredits })
+        } else {
+          fetchCredits()
+        }
       },
     })
 

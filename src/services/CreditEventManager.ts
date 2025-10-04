@@ -1,10 +1,10 @@
 export interface CreditEventListener {
-  onCreditsChanged: () => void
+  onCreditsChanged: (newCredits?: number) => void
 }
 
 export interface ICreditEventManager {
   subscribe(listener: CreditEventListener): () => void
-  emit(): void
+  emit(newCredits?: number): void
 }
 
 export class CreditEventManager implements ICreditEventManager {
@@ -17,8 +17,8 @@ export class CreditEventManager implements ICreditEventManager {
     }
   }
 
-  emit(): void {
-    this.listeners.forEach((listener) => listener.onCreditsChanged())
+  emit(newCredits?: number): void {
+    this.listeners.forEach((listener) => listener.onCreditsChanged(newCredits))
   }
 }
 
