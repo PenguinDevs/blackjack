@@ -1,26 +1,41 @@
-'use client'
-
-import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '@/lib/supabase'
+import { useReducer, useEffect, useCallback } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
+import { ICreditService, creditService } from '@/services/CreditService'
+import { creditEventManager } from '@/services/CreditEventManager'
 
-// Global event emitter for credits updates
-class CreditsEventEmitter {
-  private listeners: (() => void)[] = []
-
-  subscribe(callback: () => void) {
-    this.listeners.push(callback)
-    return () => {
-      this.listeners = this.listeners.filter((listener) => listener !== callback)
-    }
-  }
-
-  emit() {
-    this.listeners.forEach((callback) => callback())
-  }
+// State management using useReducer pattern
+interface CreditState {
+  credits: number
+  loading: boolean
+  error: string | null
 }
 
-const creditsEmitter = new CreditsEventEmitter()
+type CreditAction =
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_CREDITS'; payload: number }
+  | { type: 'SET_ERROR'; payload: string | null }
+  | { type: 'RESET' }
+
+const initialState: CreditState = {
+  credits: 0,
+  loading: true,
+  error: null
+}
+
+function creditReducer(state: CreditState, action: CreditAction): CreditState {
+  switch (action.type) {
+    case 'SET_LOADING':
+      return { ...state, loading: action.payload }
+    case 'SET_CREDITS':
+      return { ...state, credits: action.payload, loading: false, error: null }
+    case 'SET_ERROR':
+      return { ...state, error: action.payload, loading: false }
+    case 'RESET':
+      return initialState
+    default:
+      return state
+  }
+}
 
 export interface UserProfile {
   id: string
@@ -34,156 +49,136 @@ export interface UserProfile {
   updated_at: string
 }
 
-export function useCredits() {
+interface UseCreditsDependencies {
+  creditService: ICreditService
+}
+
+export function useCredits(dependencies: UseCreditsDependencies = { creditService }) {
   const { user } = useAuth()
-  const [credits, setCredits] = useState<number>(0)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [state, dispatch] = useReducer(creditReducer, initialState)
 
-  // Create profile if it doesn't exist
-  const createProfile = useCallback(async () => {
-    if (!user) return
-
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .insert({
-          id: user.id,
-          email: user.email,
-          full_name: user.user_metadata?.full_name || '',
-          avatar_url: user.user_metadata?.avatar_url || '',
-          credits: 500, // Default starting credits
-        })
-        .select('credits')
-        .single()
-
-      if (error) throw error
-      setCredits(data.credits)
-    } catch (err) {
-      console.error('Error creating profile:', err)
-      setError(err instanceof Error ? err.message : 'Failed to create profile')
-    }
-  }, [user])
-
-  // Fetch user's current credits
+  // Fetch credits with proper error handling
   const fetchCredits = useCallback(async () => {
     if (!user) {
-      setCredits(0)
-      setLoading(false)
+      dispatch({ type: 'SET_CREDITS', payload: 0 })
       return
     }
 
     try {
-      setLoading(true)
-      setError(null)
+      dispatch({ type: 'SET_LOADING', payload: true })
+      dispatch({ type: 'SET_ERROR', payload: null })
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('credits')
-        .eq('id', user.id)
-        .single()
-
-      if (error) {
-        if (error.code === 'PGRST116') {
-          // Profile doesn't exist, create it
-          await createProfile()
-          return
-        }
-        throw error
-      }
-
-      setCredits(data.credits)
+      const credits = await dependencies.creditService.getCredits(user.id)
+      dispatch({ type: 'SET_CREDITS', payload: credits })
     } catch (err) {
-      console.error('Error fetching credits:', err)
-      setError(err instanceof Error ? err.message : 'Failed to fetch credits')
-    } finally {
-      setLoading(false)
+      if (err instanceof Error && err.message === 'PROFILE_NOT_FOUND') {
+        try {
+          const credits = await dependencies.creditService.createProfile(user)
+          dispatch({ type: 'SET_CREDITS', payload: credits })
+        } catch (createErr) {
+          const errorMessage = createErr instanceof Error ? createErr.message : 'Failed to create profile'
+          dispatch({ type: 'SET_ERROR', payload: errorMessage })
+        }
+      } else {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch credits'
+        dispatch({ type: 'SET_ERROR', payload: errorMessage })
+      }
     }
-  }, [user, createProfile])
+  }, [user, dependencies.creditService])
 
-  // Add credits to user's account (free purchase)
-  const addCredits = async (amount: number) => {
+  // Add credits with optimistic updates
+  const addCredits = useCallback(async (amount: number): Promise<boolean> => {
     if (!user) return false
 
-    const originalCredits = credits
+    const originalCredits = state.credits
 
     try {
-      setError(null)
+      dispatch({ type: 'SET_ERROR', payload: null })
+      
+      // Optimistic update
+      dispatch({ type: 'SET_CREDITS', payload: state.credits + amount })
+      creditEventManager.emit()
 
-      // Optimistically update credits immediately for instant feedback
-      const newCredits = credits + amount
-      setCredits(newCredits)
-      creditsEmitter.emit()
+      const success = await dependencies.creditService.addCredits(user.id, amount)
+      
+      if (!success) {
+        // Revert optimistic update
+        dispatch({ type: 'SET_CREDITS', payload: originalCredits })
+        creditEventManager.emit()
+        dispatch({ type: 'SET_ERROR', payload: 'Failed to add credits' })
+      }
 
-      const { error } = await supabase
-        .from('profiles')
-        .update({ credits: newCredits, updated_at: new Date().toISOString() })
-        .eq('id', user.id)
-
-      if (error) throw error
-
-      return true
+      return success
     } catch (err) {
-      console.error('Error adding credits:', err)
-      // Revert optimistic update on error
-      setCredits(originalCredits)
-      creditsEmitter.emit()
-      setError(err instanceof Error ? err.message : 'Failed to add credits')
+      // Revert optimistic update
+      dispatch({ type: 'SET_CREDITS', payload: originalCredits })
+      creditEventManager.emit()
+      const errorMessage = err instanceof Error ? err.message : 'Failed to add credits'
+      dispatch({ type: 'SET_ERROR', payload: errorMessage })
       return false
     }
-  }
+  }, [user, state.credits, dependencies.creditService])
 
-  // Subtract credits (for betting, etc.)
-  const subtractCredits = async (amount: number) => {
-    if (!user || credits < amount) return false
+  // Subtract credits with validation
+  const subtractCredits = useCallback(async (amount: number): Promise<boolean> => {
+    if (!user || state.credits < amount) return false
 
-    const originalCredits = credits
+    const originalCredits = state.credits
 
     try {
-      setError(null)
+      dispatch({ type: 'SET_ERROR', payload: null })
+      
+      // Optimistic update
+      dispatch({ type: 'SET_CREDITS', payload: state.credits - amount })
+      creditEventManager.emit()
 
-      // Optimistically update credits immediately for instant feedback
-      const newCredits = credits - amount
-      setCredits(newCredits)
-      creditsEmitter.emit()
+      const success = await dependencies.creditService.subtractCredits(user.id, amount)
+      
+      if (!success) {
+        // Revert optimistic update
+        dispatch({ type: 'SET_CREDITS', payload: originalCredits })
+        creditEventManager.emit()
+        dispatch({ type: 'SET_ERROR', payload: 'Failed to subtract credits' })
+      }
 
-      const { error } = await supabase
-        .from('profiles')
-        .update({ credits: newCredits, updated_at: new Date().toISOString() })
-        .eq('id', user.id)
-
-      if (error) throw error
-
-      return true
+      return success
     } catch (err) {
-      console.error('Error subtracting credits:', err)
-      // Revert optimistic update on error
-      setCredits(originalCredits)
-      creditsEmitter.emit()
-      setError(err instanceof Error ? err.message : 'Failed to subtract credits')
+      // Revert optimistic update
+      dispatch({ type: 'SET_CREDITS', payload: originalCredits })
+      creditEventManager.emit()
+      const errorMessage = err instanceof Error ? err.message : 'Failed to subtract credits'
+      dispatch({ type: 'SET_ERROR', payload: errorMessage })
       return false
     }
-  }
+  }, [user, state.credits, dependencies.creditService])
 
   // Fetch credits when user changes
   useEffect(() => {
     fetchCredits()
   }, [user?.id, fetchCredits])
 
-  // Subscribe to credits updates from other components
+  // Subscribe to credit events from other components
   useEffect(() => {
-    const unsubscribe = creditsEmitter.subscribe(() => {
-      // Refresh credits when other components update them
-      fetchCredits()
+    const unsubscribe = creditEventManager.subscribe({
+      onCreditsChanged: () => {
+        fetchCredits()
+      }
     })
 
     return unsubscribe
   }, [fetchCredits])
 
+  // Reset state when user logs out
+  useEffect(() => {
+    if (!user) {
+      dispatch({ type: 'RESET' })
+    }
+  }, [user])
+
   return {
-    credits,
-    loading,
-    error,
+    credits: state.credits,
+    loading: state.loading,
+    error: state.error,
     addCredits,
     subtractCredits,
     refreshCredits: fetchCredits,

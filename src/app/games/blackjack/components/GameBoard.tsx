@@ -1,31 +1,44 @@
 'use client'
 
-import React, { useRef, useEffect } from 'react'
-import { BlackjackGameState, BettingState, PlayerAction, AIRecommendation } from '../types'
+import React from 'react'
+import { BlackjackGameState, BettingState, PlayerAction } from '../types'
 import { Hand } from './Card'
 import { BettingInterface } from './BettingInterface'
 import { GameActions, GameStatus } from './GameActions'
-import { GameAnimations } from '../utils/animations'
-import { useCardAnimations } from '../hooks/useCardAnimations'
-import { getAIRecommendation } from '../lib/gemini-ai-service'
+import { GameBoardLayout } from './GameBoardLayout'
+import { useAnimationManager } from '../hooks/useAnimationManager'
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import '../styles/animations.css'
 
-interface GameBoardProps {
+// Simplified interface following Interface Segregation Principle
+interface GameBoardCoreProps {
   gameState: BlackjackGameState
   bettingState: BettingState
   credits: number
+  loading?: boolean
+  error?: string | null
+}
+
+interface GameBoardActionsProps {
   onBetChange: (amount: number) => void
   onPlaceBet: () => void
   onPlayerAction: (action: PlayerAction) => void
   onShowBettingOptions: (show: boolean) => void
+}
+
+interface GameBoardAnimationProps {
   onAnimationStart?: () => void
   onAnimationComplete?: () => void
 }
+
+type GameBoardProps = GameBoardCoreProps & GameBoardActionsProps & GameBoardAnimationProps
 
 export const GameBoard: React.FC<GameBoardProps> = ({
   gameState,
   bettingState,
   credits,
+  loading = false,
+  error = null,
   onBetChange,
   onPlaceBet,
   onPlayerAction,
@@ -33,23 +46,14 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   onAnimationStart,
   onAnimationComplete,
 }) => {
-  const rootRef = useRef<HTMLDivElement>(null)
-  const prevGameStateRef = useRef<BlackjackGameState | null>(null)
   const [isInitialDealComplete, setIsInitialDealComplete] = React.useState(false)
-  const cardAnimations = useCardAnimations()
 
-  // Handle AI recommendation requests
-  const handleAIRecommendation = React.useCallback(
-    async (gameState: BlackjackGameState): Promise<AIRecommendation> => {
-      try {
-        return await getAIRecommendation(gameState)
-      } catch (error) {
-        console.error('Failed to get AI recommendation:', error)
-        throw error
-      }
-    },
-    []
-  )
+  const { rootRef } = useAnimationManager({
+    gameState,
+    onAnimationStart,
+    onAnimationComplete,
+    onInitialDealComplete: setIsInitialDealComplete,
+  })
 
   const handleCardAnimations = React.useCallback(
     async (prevState: BlackjackGameState, currentState: BlackjackGameState) => {

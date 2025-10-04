@@ -18,7 +18,7 @@ interface CreditsModalProps {
 }
 
 export function CreditsModal({ open, onOpenChange }: CreditsModalProps) {
-  const { credits, loading: creditsLoading, addCredits, error } = useCredits()
+  const { loading: creditsLoading, addCredits, error } = useCredits()
   const [purchaseLoading, setPurchaseLoading] = useState<number | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
