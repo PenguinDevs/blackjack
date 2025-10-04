@@ -148,7 +148,7 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
             }}
           >
             {/* Modal Header */}
-            <div ref={currentBetRef} className="mb-4 sm:mb-6 text-center">
+            <div ref={currentBetRef} className="mb-8 sm:mb-6 text-center">
               <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">
                 Place Your Bet
               </h3>
