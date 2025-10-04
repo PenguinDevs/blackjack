@@ -5,12 +5,7 @@ import { BlackjackGameState, BettingState } from '../types'
 import { BlackjackEngine } from '../lib/blackjack-engine'
 import { useCredits } from '@/hooks/useCredits'
 import { recordGameResult } from './server-actions'
-import {
-  GAME_DEFAULTS,
-  GAME_CONSTANTS,
-  GameResultHandler,
-  createEmptyHand,
-} from '../utils/game-utils'
+import { GAME_CONSTANTS, GameResultHandler, createEmptyHand } from '../utils/game-utils'
 
 interface UseBlackjackGameReturn {
   gameState: BlackjackGameState

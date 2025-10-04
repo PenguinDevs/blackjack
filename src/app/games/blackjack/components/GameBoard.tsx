@@ -1,13 +1,14 @@
 'use client'
 
-import React from 'react'
-import { BlackjackGameState, BettingState, PlayerAction } from '../types'
+import React, { useEffect, useRef, useCallback } from 'react'
+import { BlackjackGameState, BettingState, PlayerAction, AIRecommendation } from '../types'
 import { Hand } from './Card'
 import { BettingInterface } from './BettingInterface'
 import { GameActions, GameStatus } from './GameActions'
-import { GameBoardLayout } from './GameBoardLayout'
 import { useAnimationManager } from '../hooks/useAnimationManager'
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
+import { useCardAnimations } from '../hooks/useCardAnimations'
+import { GameAnimations } from '../utils/animations'
+import { getAIRecommendation } from '../lib/gemini-ai-service'
 import '../styles/animations.css'
 
 // Simplified interface following Interface Segregation Principle
@@ -15,8 +16,6 @@ interface GameBoardCoreProps {
   gameState: BlackjackGameState
   bettingState: BettingState
   credits: number
-  loading?: boolean
-  error?: string | null
 }
 
 interface GameBoardActionsProps {
@@ -37,8 +36,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   gameState,
   bettingState,
   credits,
-  loading = false,
-  error = null,
   onBetChange,
   onPlaceBet,
   onPlayerAction,
@@ -47,6 +44,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   onAnimationComplete,
 }) => {
   const [isInitialDealComplete, setIsInitialDealComplete] = React.useState(false)
+  const prevGameStateRef = useRef<BlackjackGameState | null>(null)
+  const cardAnimations = useCardAnimations()
 
   const { rootRef } = useAnimationManager({
     gameState,
@@ -105,7 +104,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       GameAnimations.cleanup()
       cardAnimations.clearAnimations()
     }
-  }, [cardAnimations])
+  }, [cardAnimations, rootRef])
 
   // Track game state changes and trigger animations
   useEffect(() => {
@@ -150,6 +149,19 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   }, [gameState, handleCardAnimations])
 
   // Handle dealer card flip when hole card is revealed
+  // Handle AI recommendation requests
+  const handleAIRecommendation = useCallback(
+    async (gameState: BlackjackGameState): Promise<AIRecommendation> => {
+      try {
+        return await getAIRecommendation(gameState)
+      } catch (error) {
+        console.error('Failed to get AI recommendation:', error)
+        throw error
+      }
+    },
+    []
+  )
+
   const handleDealerCardFlip = React.useCallback(async () => {
     if (
       (gameState.gameState === 'dealer-turn' || gameState.gameState === 'game-over') &&
