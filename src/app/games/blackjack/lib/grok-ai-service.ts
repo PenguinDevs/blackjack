@@ -143,7 +143,10 @@ export async function getAIRecommendation(
       }
 
       // Ensure action is valid
-      if (recommendation.action !== PLAYER_ACTIONS.HIT && recommendation.action !== PLAYER_ACTIONS.STAND) {
+      if (
+        recommendation.action !== PLAYER_ACTIONS.HIT &&
+        recommendation.action !== PLAYER_ACTIONS.STAND
+      ) {
         throw new Error(`Invalid action recommendation: ${recommendation.action}`)
       }
 

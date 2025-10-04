@@ -10,7 +10,14 @@ describe('Hand Component', () => {
   ]
 
   it('displays numeric value correctly', () => {
-    render(<Hand cards={mockCards} label="Test Hand" value={GAME_CONSTANTS.BLACKJACK_VALUE} gameState="game-over" />)
+    render(
+      <Hand
+        cards={mockCards}
+        label="Test Hand"
+        value={GAME_CONSTANTS.BLACKJACK_VALUE}
+        gameState="game-over"
+      />
+    )
 
     expect(screen.getByText(`Value: ${GAME_CONSTANTS.BLACKJACK_VALUE}`)).toBeInTheDocument()
   })

@@ -115,9 +115,9 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
 
   return (
     <div className="absolute inset-0 flex items-center justify-center">
-      <div 
-        className="relative" 
-        onMouseEnter={isMobile ? undefined : handleMouseEnter} 
+      <div
+        className="relative"
+        onMouseEnter={isMobile ? undefined : handleMouseEnter}
         onMouseLeave={isMobile ? undefined : handleMouseLeave}
       >
         {/* Always Visible Button */}
@@ -149,7 +149,9 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
           >
             {/* Modal Header */}
             <div ref={currentBetRef} className="mb-4 sm:mb-6 text-center">
-              <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">Place Your Bet</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">
+                Place Your Bet
+              </h3>
 
               <div className="mb-3">
                 <Input
@@ -166,7 +168,9 @@ export const BettingInterface: React.FC<BettingInterfaceProps> = ({
 
             {/* Betting Options */}
             <div ref={bettingButtonsRef} className="mb-4 sm:mb-6">
-              <p className="text-xs sm:text-sm text-gray-300 mb-2 sm:mb-3 text-center">Quick adjustments:</p>
+              <p className="text-xs sm:text-sm text-gray-300 mb-2 sm:mb-3 text-center">
+                Quick adjustments:
+              </p>
               <div className="flex gap-2 sm:gap-3 justify-center">
                 <Button
                   onClick={() => increaseBet(GAME_CONSTANTS.BET_INCREMENT_SMALL)}

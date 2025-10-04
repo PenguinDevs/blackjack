@@ -38,7 +38,7 @@ export const initialGameState: GameState = {
     loading: false,
     error: null,
     isInitialDealComplete: false,
-  }
+  },
 }
 
 export function gameReducer(state: GameState, action: GameAction): GameState {
@@ -46,42 +46,42 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'SET_LOADING':
       return {
         ...state,
-        ui: { ...state.ui, loading: action.payload }
+        ui: { ...state.ui, loading: action.payload },
       }
-      
+
     case 'SET_ERROR':
       return {
         ...state,
-        ui: { ...state.ui, error: action.payload }
+        ui: { ...state.ui, error: action.payload },
       }
-      
+
     case 'SET_GAME_STATE':
       return {
         ...state,
-        game: action.payload
+        game: action.payload,
       }
-      
+
     case 'SET_BETTING_STATE':
       return {
         ...state,
-        betting: { ...state.betting, ...action.payload }
+        betting: { ...state.betting, ...action.payload },
       }
-      
+
     case 'SET_INITIAL_DEAL_COMPLETE':
       return {
         ...state,
-        ui: { ...state.ui, isInitialDealComplete: action.payload }
+        ui: { ...state.ui, isInitialDealComplete: action.payload },
       }
-      
+
     case 'RESET_GAME':
       return {
         ...initialGameState,
         betting: {
           ...initialGameState.betting,
-          amount: state.betting.amount // Preserve bet amount
-        }
+          amount: state.betting.amount, // Preserve bet amount
+        },
       }
-      
+
     default:
       return state
   }
@@ -92,9 +92,10 @@ export const gameSelectors = {
   getGameState: (state: GameState) => state.game,
   getBettingState: (state: GameState) => state.betting,
   getUIState: (state: GameState) => state.ui,
-  isGameActive: (state: GameState) => state.game.gameState === 'player-turn' || state.game.gameState === 'dealer-turn',
+  isGameActive: (state: GameState) =>
+    state.game.gameState === 'player-turn' || state.game.gameState === 'dealer-turn',
   isGameWaiting: (state: GameState) => state.game.gameState === 'waiting',
   isGameOver: (state: GameState) => state.game.gameState === 'game-over',
-  canPlaceBet: (state: GameState, credits: number) => 
+  canPlaceBet: (state: GameState, credits: number) =>
     state.game.gameState === 'waiting' && credits >= state.betting.amount,
 }

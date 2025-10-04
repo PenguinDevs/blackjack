@@ -10,11 +10,11 @@ interface AnimationManagerProps {
   onInitialDealComplete?: (complete: boolean) => void
 }
 
-export const useAnimationManager = ({ 
-  gameState, 
-  onAnimationStart, 
+export const useAnimationManager = ({
+  gameState,
+  onAnimationStart,
   onAnimationComplete,
-  onInitialDealComplete
+  onInitialDealComplete,
 }: AnimationManagerProps) => {
   const rootRef = useRef<HTMLDivElement>(null)
   const prevGameStateRef = useRef<BlackjackGameState | null>(null)

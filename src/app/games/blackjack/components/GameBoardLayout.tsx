@@ -11,7 +11,7 @@ interface GameBoardLayoutProps {
 export const GameBoardLayout: React.FC<GameBoardLayoutProps> = ({
   children,
   loading = false,
-  error = null
+  error = null,
 }) => {
   return (
     <div className="relative">
@@ -33,9 +33,7 @@ export const GameBoardLayout: React.FC<GameBoardLayoutProps> = ({
       )}
 
       {/* Main Game Content */}
-      <div className="game-board-content">
-        {children}
-      </div>
+      <div className="game-board-content">{children}</div>
     </div>
   )
 }

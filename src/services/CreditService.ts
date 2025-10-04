@@ -4,7 +4,11 @@ export interface ICreditService {
   getCredits(userId: string): Promise<number>
   addCredits(userId: string, amount: number): Promise<boolean>
   subtractCredits(userId: string, amount: number): Promise<boolean>
-  createProfile(user: { id: string; email?: string; user_metadata?: Record<string, unknown> }): Promise<number>
+  createProfile(user: {
+    id: string
+    email?: string
+    user_metadata?: Record<string, unknown>
+  }): Promise<number>
 }
 
 export class CreditService implements ICreditService {
@@ -32,9 +36,9 @@ export class CreditService implements ICreditService {
 
       const { error } = await supabase
         .from('profiles')
-        .update({ 
-          credits: newCredits, 
-          updated_at: new Date().toISOString() 
+        .update({
+          credits: newCredits,
+          updated_at: new Date().toISOString(),
         })
         .eq('id', userId)
 
@@ -57,9 +61,9 @@ export class CreditService implements ICreditService {
 
       const { error } = await supabase
         .from('profiles')
-        .update({ 
-          credits: newCredits, 
-          updated_at: new Date().toISOString() 
+        .update({
+          credits: newCredits,
+          updated_at: new Date().toISOString(),
         })
         .eq('id', userId)
 
@@ -71,7 +75,11 @@ export class CreditService implements ICreditService {
     }
   }
 
-  async createProfile(user: { id: string; email?: string; user_metadata?: Record<string, unknown> }): Promise<number> {
+  async createProfile(user: {
+    id: string
+    email?: string
+    user_metadata?: Record<string, unknown>
+  }): Promise<number> {
     const { data, error } = await supabase
       .from('profiles')
       .insert({

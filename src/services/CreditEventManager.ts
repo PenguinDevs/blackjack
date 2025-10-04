@@ -13,12 +13,12 @@ export class CreditEventManager implements ICreditEventManager {
   subscribe(listener: CreditEventListener): () => void {
     this.listeners.push(listener)
     return () => {
-      this.listeners = this.listeners.filter(l => l !== listener)
+      this.listeners = this.listeners.filter((l) => l !== listener)
     }
   }
 
   emit(): void {
-    this.listeners.forEach(listener => listener.onCreditsChanged())
+    this.listeners.forEach((listener) => listener.onCreditsChanged())
   }
 }
 

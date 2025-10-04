@@ -151,7 +151,10 @@ describe('BlackjackEngine', () => {
       const dealerGame = BlackjackEngine.playDealerTurn(standGame)
 
       // Dealer should stand on DEALER_STAND_VALUE or higher
-      expect(dealerGame.dealerHand.value >= GAME_CONSTANTS.DEALER_STAND_VALUE || dealerGame.dealerHand.isBusted).toBe(true)
+      expect(
+        dealerGame.dealerHand.value >= GAME_CONSTANTS.DEALER_STAND_VALUE ||
+          dealerGame.dealerHand.isBusted
+      ).toBe(true)
     })
   })
 

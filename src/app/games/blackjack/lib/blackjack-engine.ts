@@ -112,7 +112,10 @@ export class BlackjackEngine {
     }
 
     const isBusted = value > GAME_CONSTANTS.BLACKJACK_VALUE
-    const isBlackjack = cards.length === 2 && value === GAME_CONSTANTS.BLACKJACK_VALUE && !cards.some((c) => c.isHidden)
+    const isBlackjack =
+      cards.length === 2 &&
+      value === GAME_CONSTANTS.BLACKJACK_VALUE &&
+      !cards.some((c) => c.isHidden)
 
     return { value, isBusted, isBlackjack }
   }
@@ -304,7 +307,10 @@ export class BlackjackEngine {
    * Checks if dealer should continue hitting
    */
   static shouldDealerHit(gameState: BlackjackGameState): boolean {
-    return gameState.dealerHand.value < GAME_CONSTANTS.DEALER_STAND_VALUE && !gameState.dealerHand.isBusted
+    return (
+      gameState.dealerHand.value < GAME_CONSTANTS.DEALER_STAND_VALUE &&
+      !gameState.dealerHand.isBusted
+    )
   }
 
   /**
