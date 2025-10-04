@@ -4,6 +4,9 @@ A Next.js Blackjack game.
 
 Built as part of a submission for the Monash Association of Coding take home task.
 
+### Assumptions
+- Uses a finite deck of 52 cards rather than an infinite deck.
+
 ## Tech Stack
 
 - **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS, Anime.js
