@@ -1,12 +1,18 @@
-# Blackjack
+<div align="center">
+  <h1>Blackjack</h1>
+  <p>
+    <a href="https://discord.gg/xq25Exwf3X">
+      <img src="https://img.shields.io/discord/1393987779343679649?color=5865F2&label=discord&logo=discord&logoColor=white" alt="Discord" />
+    </a>
+  </p>
+  <p>A Next.js Blackjack game. Built as part of a submission for the Monash Association of Coding take home task.</p>
+</div>
 
-A Next.js Blackjack game.
-
-Built as part of a submission for the Monash Association of Coding take home task.
+<div>&nbsp;</div>
 
 ### Assumptions
 
-- Uses a finite deck of 52 cards rather than an infinite deck.
+- Uses a finite deck of 52 cards rather than an infinite deck (where the spec assumes an infinite deck).
 
 ## Tech Stack
 
