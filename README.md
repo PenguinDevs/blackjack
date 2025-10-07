@@ -10,6 +10,10 @@
 
 <div>&nbsp;</div>
 
+## Disclaimer
+
+- This project is coded with roughly 90% AI, 10% human, but all design decisions are made by me.
+
 ### Assumptions
 
 - Uses a finite deck of 52 cards rather than an infinite deck (where the spec assumes an infinite deck).

@@ -238,7 +238,4 @@ export class GameAnimations {
 
     return { x, y }
   }
-
-  // Unused animation functions removed to eliminate DRY violations
-  // Only actively used animations (animateCardFlying, animateCardFlip, getDeckPosition, getHandPosition) are kept
 }

@@ -6,7 +6,15 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { supabase } from '@/lib/supabase'
 import { formatDistanceToNow } from 'date-fns'
-import { History, TrendingDown, TrendingUp, Minus, RefreshCw } from 'lucide-react'
+import {
+  History,
+  TrendingDown,
+  TrendingUp,
+  Minus,
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react'
 import { useEffect, useState, useCallback } from 'react'
 
 interface GameHistoryItem {
@@ -25,9 +33,12 @@ export function GameHistory() {
   const [gameHistory, setGameHistory] = useState<GameHistoryItem[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
+  const itemsPerPage = 10
 
   const fetchGameHistory = useCallback(
-    async (isRefresh = false) => {
+    async (page = currentPage, isRefresh = false) => {
       if (isRefresh) {
         setRefreshing(true)
       } else {
@@ -37,6 +48,18 @@ export function GameHistory() {
       if (!user) return
 
       try {
+        // First get the total count
+        const { count, error: countError } = await supabase
+          .from('game_history')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+
+        if (countError) throw countError
+
+        // Then get the paginated data
+        const from = (page - 1) * itemsPerPage
+        const to = from + itemsPerPage - 1
+
         const { data, error } = await supabase
           .from('game_history')
           .select(
@@ -53,7 +76,7 @@ export function GameHistory() {
           )
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
-          .limit(20)
+          .range(from, to)
 
         if (error) throw error
 
@@ -69,6 +92,7 @@ export function GameHistory() {
           })) || []
 
         setGameHistory(transformedData)
+        setTotalCount(count || 0)
       } catch (error) {
         console.error('Error fetching game history:', error)
       } finally {
@@ -79,15 +103,33 @@ export function GameHistory() {
         }
       }
     },
-    [user]
+    [user, currentPage, itemsPerPage]
   )
 
   useEffect(() => {
-    fetchGameHistory()
-  }, [user, fetchGameHistory])
+    fetchGameHistory(currentPage)
+  }, [user, currentPage, fetchGameHistory])
 
   const handleRefresh = () => {
-    fetchGameHistory(true)
+    fetchGameHistory(currentPage, true)
+  }
+
+  const totalPages = Math.ceil(totalCount / itemsPerPage)
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+  }
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1)
+    }
+  }
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1)
+    }
   }
 
   if (loading) {
@@ -100,7 +142,7 @@ export function GameHistory() {
                 <History className="h-5 w-5" />
                 <span>Game History</span>
               </CardTitle>
-              <CardDescription>Your recent games</CardDescription>
+              <CardDescription>Your game history</CardDescription>
             </div>
             <Button
               variant="outline"
@@ -129,7 +171,7 @@ export function GameHistory() {
                 <History className="h-5 w-5" />
                 <span>Game History</span>
               </CardTitle>
-              <CardDescription>Your recent games</CardDescription>
+              <CardDescription>Your game history</CardDescription>
             </div>
             <Button
               variant="outline"
@@ -202,7 +244,11 @@ export function GameHistory() {
               <History className="h-5 w-5" />
               <span>Game History</span>
             </CardTitle>
-            <CardDescription>Your recent games (last 20)</CardDescription>
+            <CardDescription>
+              {totalCount > 0
+                ? `Showing ${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, totalCount)} of ${totalCount} games`
+                : 'Your game history'}
+            </CardDescription>
           </div>
           <Button
             variant="outline"
@@ -252,6 +298,64 @@ export function GameHistory() {
             )
           })}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-6 pt-4 border-t">
+            <div className="text-sm text-muted-foreground">
+              Page {currentPage} of {totalPages}
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePrevPage}
+                disabled={currentPage <= 1}
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                Previous
+              </Button>
+
+              {/* Page Numbers */}
+              <div className="flex items-center space-x-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum: number
+                  if (totalPages <= 5) {
+                    pageNum = i + 1
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i
+                  } else {
+                    pageNum = currentPage - 2 + i
+                  }
+
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => handlePageChange(pageNum)}
+                      className="w-8 h-8 p-0"
+                    >
+                      {pageNum}
+                    </Button>
+                  )
+                })}
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleNextPage}
+                disabled={currentPage >= totalPages}
+              >
+                Next
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   )
